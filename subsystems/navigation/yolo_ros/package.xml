@@ -13,14 +13,9 @@
   <test_depend>python3-pytest</test_depend>
 
   <depend>sensor_msgs</depend>
-  <exec_depend>opencv-python</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
-  <exec_depend>yolo</exec_depend>
-  <exec_depend>ultralytics</exec_depend>
-  <exec_depend>zed_wrapper</exec_depend>
-
   <exec_depend>python3-pip</exec_depend>
-  <exec_depend>python3-ultralytics</exec_depend>
 
 
 

@@ -17,9 +17,7 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>realtime_tools</depend>
 
-  <depend>CTRE_Phoenix</depend>
-  <depend>CTRE_PhoenixCCI</depend>
-  <depend>CTRE_PhoenixTools</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
