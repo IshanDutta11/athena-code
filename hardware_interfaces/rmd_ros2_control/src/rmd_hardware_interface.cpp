@@ -36,7 +36,7 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#define DEBUG_MODE 1 // 0 for off 1 for on
+#define DEBUG_MODE 0 // 0 for off 1 for on
 
 using std::placeholders::_1;
 
@@ -206,17 +206,13 @@ hardware_interface::CallbackReturn RMDHardwareInterface::on_activate(
   for (size_t i = 0; i < initial_position_.size(); ++i) {
     RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint %zu initial position in on_activate: %f", i, initial_position_[i]);
   }
-  // Sets initial command to joint state
-  // TODO: Currently implemented by initial position parameter, but it should read initial state and then populate
   
-  // joint_command_position_ = joint_state_position_;
+  // Initialize command positions to initial values to avoid NaN
+  // Controllers will override these once they start
+  joint_command_position_ = initial_position_;
+  
   for (size_t i = 0; i < initial_position_.size(); ++i) {
-    RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint %zu command vel in on_init: %f", i, joint_state_velocity_[i]);
-  }
-  // joint_command_position_ = initial_position_;
-
-  for (size_t i = 0; i < initial_position_.size(); ++i) {
-    RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint %zu joint command in on_activate: %f", i, joint_command_position_[i]);
+    RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint %zu command position initialized to: %f", i, joint_command_position_[i]);
   }
 
   RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Successfully activated!");

@@ -24,5 +24,6 @@
   
   <export>
     <build_type>ament_cmake</build_type>
+    <controller_interface plugin="${prefix}/athena_drive_controllers.xml"/>
   </export>
 </package>
