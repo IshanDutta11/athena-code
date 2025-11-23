@@ -1,21 +1,3 @@
-// Copyright (c) 2021, Stogl Robotics Consulting UG (haftungsbeschränkt)
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-//
-// Authors: Denis Stogl
-//
-
 #include "rmd_ros2_control/rmd_hardware_interface.hpp"
 
 #include <netdb.h>
@@ -148,6 +130,8 @@ void RMDHardwareInterface::onCanMessage(const CANLib::CanFrame& frame) {
   std::string result;
 
   int data[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  double raw_motor_velocity = 0.0;
+  double raw_motor_position = 0.0;
 
   for(int i = 0; i < num_joints; i++){
     if(can_rx_frame_.id == joint_node_read_ids[i] && can_rx_frame_.data[0] == 0x9C){
@@ -166,12 +150,12 @@ void RMDHardwareInterface::onCanMessage(const CANLib::CanFrame& frame) {
       // uint16 -> int16 -> double (for calcs)
       encoder_position[i] = static_cast<double>(static_cast<int16_t>((data[7] << 8) | data[6]));
 
-      // SPEED
+      // VELOCITY
       // uint16 -> int16 -> double (for calcs)
-      motor_velocity[i] = static_cast<double>(static_cast<int16_t>((data[5] << 8) | data[4]));
+      raw_motor_velocity = static_cast<double>(static_cast<int16_t>((data[5] << 8) | data[4]));
 
       // CALCULATING JOINT STATE
-      joint_state_velocity_[i] = calculate_joint_velocity_from_motor_velocity(motor_velocity[i], joint_gear_ratios[i]);
+      motor_velocity[i] = calculate_joint_velocity_from_motor_velocity(raw_motor_velocity, joint_gear_ratios[i]);
 
     }
     else if(can_rx_frame_.id == joint_node_read_ids[i] && can_rx_frame_.data[0] == 0x92){
@@ -188,7 +172,7 @@ void RMDHardwareInterface::onCanMessage(const CANLib::CanFrame& frame) {
 
       // POSITION
       // uint32 -> int32 -> double (for calcs)
-      motor_position[i] = static_cast<double>(static_cast<int32_t>((data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4]));
+      raw_motor_position = static_cast<double>(static_cast<int32_t>((data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4]));
 
       if(DEBUG_MODE == 1) {
         for(int j = 0; j < 8; j++){
@@ -198,7 +182,7 @@ void RMDHardwareInterface::onCanMessage(const CANLib::CanFrame& frame) {
       }
       
       // CALCULATING JOINT STATE
-      joint_state_position_[i] = calculate_joint_position_from_motor_position(motor_position[i], joint_gear_ratios[i]);
+      motor_position[i] = calculate_joint_position_from_motor_position(raw_motor_position, joint_gear_ratios[i]);
     }
     else{
       if(DEBUG_MODE == 1) {
@@ -311,7 +295,6 @@ hardware_interface::return_type RMDHardwareInterface::read(
 {
   std::lock_guard<std::mutex> lock(state_mutex_);
   
-  int data[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   current_joint+=1;
   current_joint = current_joint % num_joints;
   for(int i = 0; i < num_joints; i++) {
@@ -328,9 +311,9 @@ hardware_interface::return_type RMDHardwareInterface::read(
       can_tx_frame_.data = {0x9C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
       canBus.send(can_tx_frame_);
 
-      // // CALCULATING JOINT STATE
-      // joint_state_velocity_[i] = calculate_joint_velocity_from_motor_velocity(motor_velocity[i], joint_gear_ratios[i]);
-      // joint_state_position_[i] = calculate_joint_position_from_motor_position(motor_position[i], joint_gear_ratios[i]);
+      // CALCULATING JOINT STATE
+      joint_state_velocity_[i] = motor_velocity[i];
+      joint_state_position_[i] = motor_position[i];
 
       if(DEBUG_MODE == 1) {
         RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Reading for joint: %s Motor Position: %f Joint position: %f Joint velocity: %f \n", 
@@ -341,34 +324,17 @@ hardware_interface::return_type RMDHardwareInterface::read(
       }
     }
   }
-
-  // // Values retrieved
-  // for(int i = 0; i < num_joints; i++){  
-  //   if(current_joint == i){
-  //     // CALCULATING JOINT STATE
-  //     joint_state_velocity_[i] = calculate_joint_velocity_from_motor_velocity(motor_velocity[i], joint_gear_ratios[i]);
-  //     joint_state_position_[i] = calculate_joint_position_from_motor_position(motor_position[i], joint_gear_ratios[i]);
-
-  //     if(DEBUG_MODE == 1) {
-  //       RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Reading for joint: %s Motor Position: %f Joint position: %f Joint velocity: %f \n", 
-  //                                                         info_.joints[i].name.c_str(),
-  //                                                         motor_position[i],
-  //                                                         joint_state_position_[i], 
-  //                                                         joint_state_velocity_[i]);
-  //     }
-  //   }
-  // }
     
   return hardware_interface::return_type::OK;
 }
 
 
 hardware_interface::return_type rmd_ros2_control::RMDHardwareInterface::write(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   int data[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   int32_t joint_angle = 0;
-  int16_t operating_velocity = 200;
+  int16_t operating_velocity = 300;
   int32_t joint_velocity = 0;
   
   for(int i = 0; i < num_joints; i++) {
@@ -422,7 +388,9 @@ hardware_interface::return_type rmd_ros2_control::RMDHardwareInterface::write(
     
     }
     else{
-      // RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint command value not found or undefined command state");
+      if(DEBUG_MODE == 1) {
+        RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Joint command value not found or undefined command state");
+      }
     }
 
     // Cast data to uint8_t
@@ -433,6 +401,7 @@ hardware_interface::return_type rmd_ros2_control::RMDHardwareInterface::write(
     
     canBus.send(can_tx_frame_);
   }
+  RCLCPP_INFO(rclcpp::get_logger("RMDHardwareInterface"), "Period passed to write: %f seconds", period.seconds());
    
   return hardware_interface::return_type::OK;
 }
