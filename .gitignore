@@ -1,7 +1,13 @@
+# ROS2 build files
 build/
 install/
 log/
 .vscode/
+
+# Config files for the actuator tuner
+src/subsystems/arm/arm_bringup/config/actuator_sensitivity.yaml
+src/subsystems/science/science_bringup/config/actuator_sensitivity.yaml
+src/subsystems/drive/drive_bringup/config/actuator_sensitivity.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

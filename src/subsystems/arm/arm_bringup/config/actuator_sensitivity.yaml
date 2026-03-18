@@ -1,0 +1,24 @@
+base_yaw:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 0.034040818970100084
+elbow_pitch:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956
+gripper_claw:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956
+shoulder_pitch:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956
+wrist_pitch:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 22.49054605835782
+wrist_roll:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956

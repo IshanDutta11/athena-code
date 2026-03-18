@@ -1,0 +1,16 @@
+stepper_motor_a:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956
+stepper_motor_b:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 2.9922646366081893
+talon_auger:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956
+talon_scoop:
+  max_value: 100.0
+  min_value: 0.0001
+  sensitivity: 1.0046157902783956

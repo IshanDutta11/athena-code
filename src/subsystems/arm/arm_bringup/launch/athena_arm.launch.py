@@ -35,6 +35,19 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
+            "use_tuning_mode",
+            default_value="false",
+            description="Activate the actuator sensitivity tuner.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "actuator_sensitivity_config_dir",
+            description="Directory to store actuator_sensitivity.yaml (required).",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
             "runtime_config_package",
             default_value="arm_bringup",
             description='Package with the controller\'s configuration in "config" folder. \
@@ -113,6 +126,8 @@ def generate_launch_description():
 
     # -- Initialize Arguments --
     use_sim = LaunchConfiguration("use_sim")
+    use_tuning_mode = LaunchConfiguration("use_tuning_mode")
+    actuator_sensitivity_config_dir = LaunchConfiguration("actuator_sensitivity_config_dir")
     runtime_config_package = LaunchConfiguration("runtime_config_package")
     # joystick_config = LaunchConfiguration("joystick_config")
     # teleop_twist_config = LaunchConfiguration("teleop_twist_config")
@@ -265,6 +280,17 @@ def generate_launch_description():
         arguments=["motor_status_broadcaster", "-c", "/controller_manager"],
     )
 
+    sensitivity_tuner_node = Node(
+        package="arm_bringup",
+        executable="actuator_sensitivity_tuner.py",
+        name="actuator_sensitivity_tuner",
+        output="screen",
+        condition = IfCondition(use_tuning_mode),
+        parameters=[
+            {"config_dir": actuator_sensitivity_config_dir},
+        ],
+    )
+
     robot_controller_names = [robot_controller]
     robot_controller_spawners = []
     for controller in robot_controller_names:
@@ -392,6 +418,7 @@ def generate_launch_description():
         [
             # umdloop_can_node,
             control_node,
+            sensitivity_tuner_node,
             joystick_publisher,
             # joint_state_publisher, # sends 0s to /joint_states
             # joint_state_publisher_gui_node, # sends gui values to /joint_states

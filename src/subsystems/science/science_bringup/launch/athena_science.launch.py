@@ -21,6 +21,7 @@
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler, TimerAction
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -31,6 +32,19 @@ from launch.actions import TimerAction
 def generate_launch_description():
     # Declare arguments
     declared_arguments = []
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "use_tuning_mode",
+            default_value="false",
+            description="Activate the actuator sensitivity tuner.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "actuator_sensitivity_config_dir",
+            description="Directory to store actuator_sensitivity.yaml (required).",
+        )
+    )
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
@@ -96,6 +110,8 @@ def generate_launch_description():
     )
 
     # Initialize Arguments
+    use_tuning_mode = LaunchConfiguration("use_tuning_mode")
+    actuator_sensitivity_config_dir = LaunchConfiguration("actuator_sensitivity_config_dir")
     runtime_config_package = LaunchConfiguration("runtime_config_package")
     controllers_file = LaunchConfiguration("controllers_file")
     description_package = LaunchConfiguration("description_package")
@@ -181,6 +197,17 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["motor_status_broadcaster", "-c", "/controller_manager"],
+    )
+
+    sensitivity_tuner_node = Node(
+        package="drive_bringup",
+        executable="actuator_sensitivity_tuner.py",
+        name="actuator_sensitivity_tuner",
+        output="screen",
+        condition = IfCondition(use_tuning_mode),
+        parameters=[
+            {"config_dir": actuator_sensitivity_config_dir},
+        ],
     )
 
     # CONTROLLER MANAGERS
@@ -329,6 +356,7 @@ def generate_launch_description():
         declared_arguments
         + [
             control_node,
+            sensitivity_tuner_node,
             robot_state_pub_node,
             rviz_node,
             delay_joint_state_broadcaster_spawner_after_ros2_control_node,

@@ -41,6 +41,8 @@
   <exec_depend>general_controllers</exec_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
 
   <depend>moveit_configs_utils</depend>
 
