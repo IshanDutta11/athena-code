@@ -28,7 +28,6 @@ install(
 
 install(PROGRAMS
   scripts/controller_switcher.py
-  scripts/actuator_sensitivity_tuner.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

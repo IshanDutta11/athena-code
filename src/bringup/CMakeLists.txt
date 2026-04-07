@@ -20,6 +20,7 @@ endif()
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/controller_switcher.py)
   install(PROGRAMS
     scripts/controller_switcher.py
+    scripts/actuator_sensitivity_tuner.py
     DESTINATION lib/${PROJECT_NAME}
   )
 endif()

@@ -231,7 +231,7 @@ def generate_launch_description():
     )
 
     sensitivity_tuner_node = Node(
-        package="drive_bringup",
+        package="bringup",
         executable="actuator_sensitivity_tuner.py",
         name="actuator_sensitivity_tuner",
         output="screen",

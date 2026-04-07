@@ -5,7 +5,7 @@ stepper_motor_a:
 stepper_motor_b:
   max_value: 100.0
   min_value: 0.0001
-  sensitivity: 2.9922646366081893
+  sensitivity: 2.792543841237338
 talon_auger:
   max_value: 100.0
   min_value: 0.0001
