@@ -179,13 +179,20 @@ def launch_setup(context, *args, **kwargs):
         .robot_description_kinematics(file_path=robot_kinematics_path.perform(LaunchContext()))
         .trajectory_execution(file_path=moveit_controllers_config_path.perform(LaunchContext()))
         .planning_scene_monitor(
-            publish_robot_description=True, publish_robot_description_semantic=True
+            publish_robot_description=False, publish_robot_description_semantic=True
         )
         .planning_pipelines(
             pipelines=["ompl", "pilz_industrial_motion_planner"],
             default_planning_pipeline="ompl",
         )
         .to_moveit_configs()
+    )
+
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[moveit_config.to_dict()]
     )
 
     joystick_publisher = Node(
@@ -336,6 +343,7 @@ def launch_setup(context, *args, **kwargs):
 
     jetson_actions = [
         control_node,
+        move_group_node,
         robot_state_pub_node,
         delay_joint_state_broadcaster_spawner_after_ros2_control_node,
         delay_motor_status_broadcaster_after_joint_state_broadcaster,
