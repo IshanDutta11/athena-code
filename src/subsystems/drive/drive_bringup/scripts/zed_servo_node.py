@@ -10,6 +10,7 @@ import numpy as np
 from pyfirmata import Arduino, util
 from pathlib import Path
 import time
+import os
 
 #Mulitple nodes within the same porgram...
 
@@ -18,7 +19,13 @@ SUCCESS_CODE = sl.ERROR_CODE.SUCCESS
 
 #MAT object to CV2 object
 def slMat2cvMat(sl_mat:sl.Mat) -> cv.Mat:
-    return cv.cvtColor(sl_mat.get_data(),cv.COLOR_BGRA2BGR)
+    return cv.cvtColor(crop_black_borders(sl_mat.get_data()),cv.COLOR_BGRA2BGR)
+def crop_black_borders(image):
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    _, thresh = cv.threshold(gray, 1, 255, cv.THRESH_BINARY)
+    contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    x, y, w, h = cv.boundingRect(contours[0])
+    return image[y:y+h, x:x+w]
 
 class Zed_Servo_Node(Node):
     #Node Parameters: take_panorama:bool <-- Do we take the panorama? 
@@ -52,7 +59,6 @@ class Zed_Servo_Node(Node):
         #When we receive "True" Run this
         self.declare_parameter('angle',0.0)
         self.declare_parameter('frames',0)
-        #self.declare_parameter('image_dir',"panoramic_shot.img")
         
         #creates the GPS Subscription here
         
@@ -127,18 +133,20 @@ class Zed_Servo_Node(Node):
         i = 0
         cv_image_list = []
         current_angle = 0.0
+        #Makes directory called temp_photos if one doesn't exist
         dir_path = "temp_photos"
+        os.makedirs(dir_path, exist_ok=True)
         #Iterate through X Amount of images + Rotations
-        rotate_amount = total_angle/image_amount
+        rotate_amount = total_angle/(image_amount-1)
         self.get_logger().info(f"Rotate_amount:{rotate_amount}")
         
-        mid_point = math.ceil(image_amount/2)#31/2 = 15.5 -> 16 - 1 = 15 
+        #31/2 = 15.5 -> 16 - 1 = 15 
+        mid_point = math.ceil(image_amount/2)
         while i < image_amount:
             #Move servo first before taking picture, except for the first picture
-            write_path = f"{dir_path}/img_"+str(i+1)+".jpg"
+            write_path = f"{dir_path}/img_"+str(i+1)+".png"
             if i > 0:
                 current_angle += rotate_amount
-                
                 #Actuate servo here
                 self.servo_publisher.publish(current_angle)
                 time.sleep(1.0)  # Wait for servo to fully stop
@@ -186,11 +194,11 @@ class Zed_Servo_Node(Node):
 
         if status == cv.Stitcher_OK:
             # Save the stitched image
-            cv.imwrite(f"{out_image_name}.png", stitched_image)
-            self.get_logger().info(f"Stitching completed successfully. Image saved as '{out_image_name}.png'.")
+            cv.imwrite(f"{dir_path}/{out_image_name}.png", stitched_image)
+            self.get_logger().info(f"Stitching completed successfully. Image saved as '{dir_path}/{out_image_name}.png'.")
         else:
             self.get_logger().info("Stitching failed with status code:", status)
-
+    
 def main(args=None):
     #Checks if Cython is being run
     
@@ -199,15 +207,6 @@ def main(args=None):
     rclpy.spin(node=node) # Node spin = Keep this Node alive until we kill it
     #Maybe spin it up once then kill the subscription to get the location
     rclpy.shutdown() #Shutsdown a Node
-
-#Considerable if we find black borders
-# def crop_black_borders(self, image):
-#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#     _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
-#     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#     x, y, w, h = cv2.boundingRect(contours[0])
-#     return image[y:y+h, x:x+w]
-    
 
 if __name__ == "__main__":
     main()
