@@ -204,3 +204,4 @@ rear_ackermann_controller:
     wheel_radius: 0.125
     max_speed: 0.59
     max_steer_angle: 0.785398
+    interface_name: position
