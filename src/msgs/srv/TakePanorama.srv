@@ -1,0 +1,6 @@
+bool take_panorama  
+float64 max_angle #angle to rotate to
+int64 frames
+---
+bool success
+string message

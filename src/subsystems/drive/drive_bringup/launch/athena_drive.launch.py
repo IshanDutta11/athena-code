@@ -112,6 +112,7 @@ def generate_launch_description():
             description="Robot controller to start.",
         )
     )
+    #Do I need to add my Zed Servo Controller here? 
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
 
@@ -228,6 +229,12 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="spawner",
         arguments=["motor_status_broadcaster", "-c", "/controller_manager"],
+    )
+
+    zed_servo_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["zed_servo_controller", "-c", "/controller_manager"],
     )
 
     robot_controller_names = [robot_controller]
@@ -351,6 +358,7 @@ def launch_setup(context, *args, **kwargs):
 
     jetson_actions = [
         control_node,
+        zed_servo_spawner,
         robot_state_pub_node,
         delay_joint_state_broadcaster_spawner_after_ros2_control_node,
         delay_motor_status_broadcaster_after_joint_state_broadcaster,

@@ -19,6 +19,14 @@ install(
   DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME}
 )
+install(PROGRAMS
+  scripts/zed_arduino_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS
+  scripts/zed_arduino_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 
 if(BUILD_TESTING)
