@@ -182,3 +182,4 @@ zed_servo_controller:
   ros__parameters:
     joints: 
     - zed_servo_joint
+    interface_name: position
