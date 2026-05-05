@@ -57,12 +57,6 @@ generate_parameter_library(front_ackermann_controller_parameters
 generate_parameter_library(rear_ackermann_controller_parameters
   config/rear_ackermann_controller.yaml
 )
-##.yaml or .hpp? Added the hpp if needed
-##included controller_parameters
-# generate_parameter_library(zed_servo_controller_parameters
-#   config/zed_servo_controller.yaml
-#   include/athena_drive_controllers/validate_drive_controller_parameters.hpp
-# ) taken out for testing since we dont need to generate a library for this
 
 add_library(
   drive_controllers
