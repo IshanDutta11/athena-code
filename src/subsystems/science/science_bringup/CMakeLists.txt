@@ -23,7 +23,11 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 install(PROGRAMS
+<<<<<<< HEAD
   scripts/zed_servo_node.py
+=======
+  scripts/zed_arduino_node.py
+>>>>>>> e6025d0 (Drive Changes)
   DESTINATION lib/${PROJECT_NAME}
 )
 install(PROGRAMS
