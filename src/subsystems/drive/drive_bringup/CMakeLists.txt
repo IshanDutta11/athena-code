@@ -20,15 +20,6 @@ install(PROGRAMS
   scripts/controller_switcher.py
   DESTINATION lib/${PROJECT_NAME}
 )
-install(PROGRAMS
-  scripts/zed_arduino_node.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-install(PROGRAMS
-  scripts/zed_servo_node.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 
 if(BUILD_TESTING)
 endif()

@@ -297,28 +297,6 @@ def launch_setup(context, *args, **kwargs):
             )],
         )
     )
-    zed_servo_node = RegisterEventHandler(
-    event_handler=OnProcessStart(
-        target_action=control_node,
-        on_start=[TimerAction(
-            period=8.0,  # enough time for everything to settle
-            actions=[
-                Node(
-                    package="drive_bringup",
-                    executable="zed_servo_node.py",
-                    name="zed_servo_node",
-                    output="screen"
-                ),
-                Node(
-                    package="drive_bringup",
-                    executable="zed_arduino_node.py",
-                    name="zed_arduino_node",
-                    output="screen"
-                )
-            ]
-        )]
-    )
-)
 
     delay_joint_state_broadcaster_spawner_after_ros2_control_node = RegisterEventHandler(
         event_handler=OnProcessStart(
@@ -384,8 +362,6 @@ def launch_setup(context, *args, **kwargs):
         delay_motor_status_broadcaster_after_joint_state_broadcaster,
         delay_rviz_after_joint_state_broadcaster_spawner,
         controller_switcher_node,
-        zed_servo_node,#zed_servo_node,
-        #zed_arduino_node,
     ] + delay_robot_controller_spawners_after_joint_state_broadcaster_spawner \
       + delay_inactive_robot_controller_spawners_after_joint_state_broadcaster_spawner \
       + delay_gpio_controller_spawners_after_joint_state_broadcaster_spawner

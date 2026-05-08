@@ -2,24 +2,23 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String,Int32, Float64MultiArray,Float32
-from panorama_interfaces.srv import TakePanorama
+from science_bringup.srv import TakePanorama
 import pyzed.sl as sl
 import cv2 as cv
 import math
 import numpy as np
-from pyfirmata import Arduino, util
 from pathlib import Path
 import time
 import os
 
 #Mulitple nodes within the same porgram...
 
-cam_dir = [sl.VIEW.LEFT,sl.VIEW.SIDE_BY_SIDE,sl.VIEW.RIGHT]
+#cam_dir = [sl.VIEW.LEFT,sl.VIEW.SIDE_BY_SIDE,sl.VIEW.RIGHT]
 SUCCESS_CODE = sl.ERROR_CODE.SUCCESS
 
 #MAT object to CV2 object
 def slMat2cvMat(sl_mat:sl.Mat) -> cv.Mat:
-    return cv.cvtColor(crop_black_borders(sl_mat.get_data()),cv.COLOR_BGRA2BGR)
+   return cv.cvtColor(crop_black_borders(sl_mat.get_data()),cv.COLOR_BGRA2BGR)
 def crop_black_borders(image):
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     _, thresh = cv.threshold(gray, 1, 255, cv.THRESH_BINARY)
@@ -33,9 +32,9 @@ class Zed_Servo_Node(Node):
     # ros2 run node 360, 2000 0 0 
     def __init__(self):
         #Ros2 service call
-        super().__init__(node_name="Panorama_Node")
+        super().__init__(node_name="zed_servo_node")
         #Node needs to be turned on/off
-        
+        # Then in your camera init:
 
         self.init_param = sl.InitParameters()
         self.runtime_param = sl.RuntimeParameters()
@@ -43,28 +42,31 @@ class Zed_Servo_Node(Node):
         self.cv_image_list = []
         self.camera = sl.Camera()
         self.pose = sl.Pose()
-        
-        self.publisher = self.create_publisher(
-            Float64MultiArray,
-            '/zed_servo_controller/commands',
-            10
+        self.get_logger().info(f"Called Panorama Node")
+
+        self.service = self.create_service(
+            TakePanorama,
+            'take_panorama',
+            self.handlePanorama
         )
+
         self.servo_publisher = self.create_publisher(
             Float32,
-            'temp_topic',
+            'zed_servo_publisher',
             10
         )
-        #Take Panorama parameter
-        self.declare_parameter('take_panorama',False)
-        #When we receive "True" Run this
-        self.declare_parameter('angle',0.0)
-        self.declare_parameter('frames',0)
+        #Make this a service
+        #frames to take
+        #take_panorama.srv
+        # take_panorama = take pictures or not 
+        # max_angle = angle to turn to,
+        # frames = Frames to capture 
         
         #creates the GPS Subscription here
         
         ##Subscribe to the heading
         ##heading_topic
-        self.subscription = self.create_subscription(
+        self.subscription = self.create_subscription(#/sub/request
             String,
             "sensor_msgs/msg/NavSatFix",
             self.set_header,
@@ -75,7 +77,7 @@ class Zed_Servo_Node(Node):
         self.init_param.camera_resolution=sl.RESOLUTION.HD2K#Test with 1080|2K #We have to use 720, because images aren't wide enough
         self.init_param.camera_fps = 15
         
-        # Refer here: https://www.stereolabs.com/docs/positional-tracking/coordinate-frames
+        # # Refer here: https://www.stereolabs.com/docs/positional-tracking/coordinate-frames
         # RIGHT_HANDED_Z_UP_X_FWD is apparently ROS2 standard
         
         self.init_param.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD 
@@ -103,9 +105,11 @@ class Zed_Servo_Node(Node):
         if(request.take_panorama):
             self.get_logger().info("Panormic Service called")
             try:
-                #self.get_initial_position()
+                self.max_angle = request.max_angle 
+                frames = request.frames
                 #And then we pass this off into the take_panorama for it's initial position 
-                self.take_panorama()
+                #self.take_panorama()
+                self.get_logger().info(f"Service call: {self.max_angle} degrees and {frames}")
                 response.message = "Panoramic Shots successfully captured"
                 response.success = True
             except Exception as e:
@@ -115,17 +119,18 @@ class Zed_Servo_Node(Node):
             #Deactivate the panoramic shots
             self.get_logger().info("Deactivating Panoramic Shots")
             response.message = "Deactivated Panoramic photos"
-            response.success = False 
+            response.success = False
+        return response
 
     def take_panorama(self):
-        total_angle = 270
-        image_amount = self.get_parameter("frames").value
+        total_angle = self.max_angle
+        frames = self.frames
 
         #If Current object at the current run time parameter is active 
-        if(image_amount%2==0):
+        if(frames%2==0):
             self.get_logger().info("Requires odd amount of images")
             return -1
-        if(image_amount<3):
+        if(frames<3):
             self.get_logger().info("More than 2 photos required")
             return -1
         #Initialize Matrix here
@@ -137,12 +142,12 @@ class Zed_Servo_Node(Node):
         dir_path = "temp_photos"
         os.makedirs(dir_path, exist_ok=True)
         #Iterate through X Amount of images + Rotations
-        rotate_amount = total_angle/(image_amount-1)
+        rotate_amount = total_angle/(frames-1)
         self.get_logger().info(f"Rotate_amount:{rotate_amount}")
         
         #31/2 = 15.5 -> 16 - 1 = 15 
-        mid_point = math.ceil(image_amount/2)
-        while i < image_amount:
+        mid_point = math.ceil(frames/2)
+        while i < frames:
             #Move servo first before taking picture, except for the first picture
             write_path = f"{dir_path}/img_"+str(i+1)+".png"
             if i > 0:
@@ -153,6 +158,7 @@ class Zed_Servo_Node(Node):
             if i == mid_point:
                 self.get_logger().info(f"Mid Point Reached at image {i+1}, current angle: {current_angle} degrees")
                 #GPS node can get "Header information first"
+                #Request or 
             #Takes picture
             self.camera.grab(self.runtime_param)
             self.camera.retrieve_image(img,sl.VIEW.LEFT)
