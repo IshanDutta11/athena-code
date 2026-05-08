@@ -13,7 +13,7 @@ import os
 
 #Mulitple nodes within the same porgram...
 
-#cam_dir = [sl.VIEW.LEFT,sl.VIEW.SIDE_BY_SIDE,sl.VIEW.RIGHT]
+cam_dir = [sl.VIEW.LEFT,sl.VIEW.SIDE_BY_SIDE,sl.VIEW.RIGHT]
 SUCCESS_CODE = sl.ERROR_CODE.SUCCESS
 
 #MAT object to CV2 object

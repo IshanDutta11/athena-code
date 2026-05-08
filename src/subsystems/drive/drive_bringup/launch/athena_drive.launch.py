@@ -370,7 +370,6 @@ def launch_setup(context, *args, **kwargs):
         joystick_publisher,
         teleop_twist_joy,
     ]
-    print(mode)
     if mode == "jetson":
         return jetson_actions
     elif mode == "base_station":
