@@ -17,6 +17,12 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES builtin_interfaces
 )
 
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/SetController.srv"
+  "srv/TakePanorama.srv"
+  DEPENDENCIES builtin_interfaces
+)
+
 
 install(
   DIRECTORY config launch

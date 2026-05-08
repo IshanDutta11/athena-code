@@ -63,12 +63,3 @@ Source of this file are templates in
 		</description>
 	</class>
 </library>
-
-<library path="drive_controllers">
-  <class name = "athena_drive_controllers/ZedServoController" 
-  type = "drive_controllers::ZedServoController" base_class_type="controller_interface::ControllerInterface">
-  <description>
-    Panorama Servo Controller: Controls the panorama servo to take pictures for science mission
-  </description>
-  </class>
-</library>
