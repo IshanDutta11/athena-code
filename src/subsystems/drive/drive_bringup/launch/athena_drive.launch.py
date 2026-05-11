@@ -112,7 +112,13 @@ def generate_launch_description():
             description="Robot controller to start.",
         )
     )
-    #Do I need to add my Zed Servo Controller here? 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "deactivate_odrive",
+            default_value="false",
+            description="Deactivate the ODrive joints in the URDF when using mock hardware to prevent excessive CAN flow.",
+        )
+    )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
 
@@ -131,6 +137,7 @@ def launch_setup(context, *args, **kwargs):
     use_mock_hardware = LaunchConfiguration("use_mock_hardware")
     mock_sensor_commands = LaunchConfiguration("mock_sensor_commands")
     robot_controller = LaunchConfiguration("robot_controller")
+    deactivate_odrive = LaunchConfiguration("deactivate_odrive")
 
     robot_description_path = PathJoinSubstitution(
         [FindPackageShare(description_package), "urdf", description_file]
@@ -168,6 +175,8 @@ def launch_setup(context, *args, **kwargs):
             "mock_sensor_commands:=",
             mock_sensor_commands,
             " ",
+            "deactivate_odrive:=",
+            deactivate_odrive,
         ]
     )
 
@@ -252,7 +261,8 @@ def launch_setup(context, *args, **kwargs):
                 arguments=[controller, "-c", "/controller_manager"],
             )
         ]
-    gpio_controller_names = ["led_gpio_controller", "killswitch_gpio_controller"]
+
+    gpio_controller_names = ["drive_led_gpio_controller", "power_module_gpio_controller"]
     gpio_controller_spawners = []
     for controller in gpio_controller_names:
         gpio_controller_spawners += [
@@ -316,10 +326,10 @@ def launch_setup(context, *args, **kwargs):
         )
     )
 
-    delay_motor_status_broadcaster_after_joint_state_broadcaster = RegisterEventHandler(
+    delay_motor_status_controller_after_joint_state_broadcaster = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=joint_state_broadcaster_spawner,
-            on_exit=[motor_status_broadcaster_spawner],
+            on_exit=[motor_status_controller_spawner],
         )
     )
 
@@ -365,7 +375,7 @@ def launch_setup(context, *args, **kwargs):
         zed_servo_spawner,
         robot_state_pub_node,
         delay_joint_state_broadcaster_spawner_after_ros2_control_node,
-        delay_motor_status_broadcaster_after_joint_state_broadcaster,
+        delay_motor_status_controller_after_joint_state_broadcaster,
         delay_rviz_after_joint_state_broadcaster_spawner,
         controller_switcher_node,
     ] + delay_robot_controller_spawners_after_joint_state_broadcaster_spawner \
