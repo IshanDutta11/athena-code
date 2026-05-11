@@ -16,7 +16,7 @@
         </xacro:unless>
       </hardware>
 
-      <joint name="talon_auger">
+      <joint name="dc_auger">
         <param name="node_id">2</param>
         <param name="joint_type">revolute</param>
         <!-- Motor config (goBilda Saturn 5303 Series 360 RPM) -->
@@ -38,10 +38,10 @@
         <state_interface name="status"/>
       </joint>
 
-      <joint name="talon_scoop">
+      <!-- <joint name="dc_scoop">
         <param name="node_id">0</param>
         <param name="joint_type">revolute</param>
-        <!-- Motor config (Pololu 37D defaults) -->
+        <!- Motor config (Pololu 37D defaults) ->
         <param name="encoder_resolution">64.0</param>
         <param name="gear_ratio">102.08</param>
         <param name="inverted">true</param>
@@ -58,7 +58,7 @@
         <state_interface name="motor_temperature"/>
         <state_interface name="torque_current"/>
         <state_interface name="status"/>
-      </joint>
+      </joint> -->
     </ros2_control>
   </xacro:macro>
 </robot>

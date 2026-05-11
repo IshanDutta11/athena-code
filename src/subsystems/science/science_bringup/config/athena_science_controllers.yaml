@@ -29,15 +29,16 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_rack_and_pinion_l
-      - servo_rack_and_pinion_r
-      - servo_scoop_a
+      - servo_scoops_lift_l
+      - servo_scoops_lift_r
+      - servo_sampler_lift_l
+      - servo_sampler_lift_r
+      - servo_conveyor_belt
+      - servo_scoop_f
       - servo_scoop_b
-      - dc_scoop
-      - servo_sampler_lift_l
-      - servo_sampler_lift_l
-      - dc_auger
       - servo_auger_lift
+      - dc_scoop
+      - dc_auger
     interface_name: position
 
 /**/joint_group_velocity_controller:
@@ -45,15 +46,16 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_rack_and_pinion_l
-      - servo_rack_and_pinion_r
-      - servo_scoop_a
-      - servo_scoop_b
-      - dc_scoop
+      - servo_scoops_lift_l
+      - servo_scoops_lift_r
       - servo_sampler_lift_l
       - servo_sampler_lift_r
-      - dc_auger
+      - servo_conveyor_belt
+      - servo_scoop_f
+      - servo_scoop_b
       - servo_auger_lift
+      - dc_scoop
+      - dc_auger
     interface_name: velocity
 
 /**/science_controller:
@@ -62,19 +64,23 @@
     pump_a: "stepper_motor_a"
     pump_b: "stepper_motor_b"
     
-    # Lift
-    lift_rack_and_pinion_l: "servo_rack_and_pinion_l"
-    lift_rack_and_pinion_r: "servo_rack_and_pinion_r"
-    
-    # Scoops
-    scoop_servos: ["servo_scoop_a", "servo_scoop_b"]
-    scoop_spinner: "dc_scoop"
+    # Scoops Lift
+    scoops_lift_l: "servo_scoops_lift_l"
+    scoops_lift_r: "servo_scoops_lift_r"
 
     # Sampler
     sampler_lift_l: "servo_sampler_lift_l"
     sampler_lift_r: "servo_sampler_lift_r"
+
+    # Conveyor Belt
+    conveyor_belt: "servo_conveyor_belt"
+    
+    # Scoops
+    scoop_servos: ["servo_scoop_f", "servo_scoop_b"]
+    scoop_spinner: "dc_scoop"
+
     auger_spinner: "dc_auger"
-    cap: "servo_auger_lift"
+    auger_lift: "servo_auger_lift"
     interface_name: position 
     command_interfaces: [position, velocity]
     state_interfaces: [position, velocity]
@@ -120,15 +126,16 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_rack_and_pinion_l
-      - servo_rack_and_pinion_r
-      - servo_scoop_a
-      - servo_scoop_b
-      - dc_scoop
+      - servo_scoops_lift_l
+      - servo_scoops_lift_r
       - servo_sampler_lift_l
       - servo_sampler_lift_r
-      - dc_auger
+      - servo_conveyor_belt
+      - servo_scoop_f
+      - servo_scoop_b
       - servo_auger_lift
+      - dc_scoop
+      - dc_auger
     gpios:
       - spectrometry_laser
       - fluoro_led
@@ -153,10 +160,10 @@
       dc_auger:
         interfaces:
           - status_request
-          - maintenance_request
-          - maintenance_frame_high
-          - maintenance_frame_low
-          - maintenance_data_count
+          # - maintenance_request
+          # - maintenance_frame_high
+          # - maintenance_frame_low
+          # - maintenance_data_count
     state_interfaces:
       stepper_motor_a:
         interfaces:
@@ -164,13 +171,16 @@
       stepper_motor_b:
         interfaces:
           - status
-      servo_rack_and_pinion_l:
+      servo_scoops_lift_l:
         interfaces:
           - status
-      servo_rack_and_pinion_r:
+      servo_scoops_lift_r:
         interfaces:
           - status
-      servo_scoop_a:
+      servo_conveyor_belt:
+        interfaces:
+          - status
+      servo_scoop_f:
         interfaces:
           - status
       servo_scoop_b:

@@ -19,7 +19,7 @@
 
 #include "controller_interface/helpers.hpp"
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 namespace
 {
@@ -44,7 +44,7 @@ controller_interface::CallbackReturn ScienceManual::on_init()
 {
   control_mode_.initRT(control_mode_type::STAGE1);
 
-  servo_scoop_a_toggle = false;
+  servo_scoop_f_toggle = false;
   servo_scoop_b_counter = 0; // TESTING
 
   try {
@@ -69,12 +69,13 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
   // Fill each joint variable
   pump_a = params_.pump_a;
   pump_b = params_.pump_b;
-  lift_rack_and_pinion_l = params_.lift_rack_and_pinion_l;
-  lift_rack_and_pinion_r = params_.lift_rack_and_pinion_r;
-  scoop_servos = params_.scoop_servos;
-  scoop_spinner = params_.scoop_spinner;
+  scoops_lift_l = params_.scoops_lift_l;
+  scoops_lift_r = params_.scoops_lift_r;
   sampler_lift_l = params_.sampler_lift_l;
   sampler_lift_r = params_.sampler_lift_r;
+  conveyor_belt = params_.conveyor_belt;
+  scoop_servos = params_.scoop_servos;
+  scoop_spinner = params_.scoop_spinner;
   auger_spinner = params_.auger_spinner;
   auger_lift = params_.auger_lift;
 
@@ -96,23 +97,24 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
   servo_joints_.push_back(params_.sampler_lift_r);
   servo_joints_.push_back(params_.auger_lift);
 
-  rack_pinion_joints_.clear();
-  rack_pinion_joints_.push_back(params_.lift_rack_and_pinion_l);
-  rack_pinion_joints_.push_back(params_.lift_rack_and_pinion_r);
+  scoops_lift_joints_.clear();
+  scoops_lift_joints_.push_back(params_.scoops_lift_l);
+  scoops_lift_joints_.push_back(params_.scoops_lift_r);
 
   // Populate joints vector
   joints_.clear();
 
   joints_.push_back(pump_a);
   joints_.push_back(pump_b);
-  joints_.push_back(lift_rack_and_pinion_l);
-  joints_.push_back(lift_rack_and_pinion_r);
+  joints_.push_back(scoops_lift_l);
+  joints_.push_back(scoops_lift_r);
 
   joints_.insert(joints_.end(), scoop_servos.begin(), scoop_servos.end());
 
   joints_.push_back(scoop_spinner);
   joints_.push_back(sampler_lift_l);
   joints_.push_back(sampler_lift_r);
+  joints_.push_back(conveyor_belt);
   joints_.push_back(auger_spinner);
   joints_.push_back(auger_lift);
 
@@ -131,13 +133,6 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
   }
 
   prev_buttons_.assign(joystick_buttons, 0);
-
-  // Start the Rack and Pinions off at their intended "0" position
-  // rack_left_position = params_.position_range_lift_left[1];
-  // rack_right_position = params_.position_range_lift_right[0]; // Orientation is flipped, so we start from top
-
-  rack_left_position = 185;
-  rack_right_position = 185;
 
   // QoS
   auto subscribers_qos = rclcpp::SystemDefaultsQoS();
@@ -190,23 +185,32 @@ controller_interface::InterfaceConfiguration ScienceManual::command_interface_co
     cfg.names.push_back(joint + "/velocity");
   }
 
-  // Lift
-  for (const auto & joint : rack_pinion_joints_) {
-    cfg.names.push_back(joint + "/position");
+  // Scoops Lift
+  for (const auto & joint : scoops_lift_joints_) {
+    cfg.names.push_back(joint + "/velocity");
   }
 
-  // Scoops
-  cfg.names.push_back(params_.scoop_spinner + "/velocity");
+  // Sampler Lift
+  cfg.names.push_back(sampler_lift_l + "/velocity");
+  cfg.names.push_back(sampler_lift_r + "/velocity");
+
+  // Conveyor Belt
+  cfg.names.push_back(conveyor_belt + "/velocity");
+
+  // Scoop servos
   for (const auto & joint : scoop_servos)
   {
     cfg.names.push_back(joint + "/position");
   }
 
-  // Sampler
-  cfg.names.push_back(sampler_lift_l + "/position");
-  cfg.names.push_back(sampler_lift_r + "/position");
-  cfg.names.push_back(auger_spinner + "/velocity");
+  // Auger Lift
   cfg.names.push_back(auger_lift + "/position");
+
+  // Scoop spinner
+  cfg.names.push_back(scoop_spinner + "/velocity");
+
+  // Sampler
+  cfg.names.push_back(auger_spinner + "/velocity");
 
   return cfg; 
 }
@@ -248,7 +252,7 @@ controller_interface::CallbackReturn ScienceManual::on_deactivate(
   stepper_pump_joints_.clear();
   dc_joints_.clear();
   servo_joints_.clear();
-  rack_pinion_joints_.clear();
+  scoops_lift_joints_.clear();
   state_joints_.clear();
 
   RCLCPP_INFO(get_node()->get_logger(), "Manual controller deactivated and released interfaces");
@@ -271,69 +275,87 @@ controller_interface::return_type ScienceManual::update(
 
   // -- Pumps --
   // Stepper motors command (velocity-like value, but we feed as position target here)
-  bool pump_button = (msg->buttons.size() > 2 && msg->buttons[2]);
-  if (pump_button && !prev_pump_button_) {
-      pump_toggle = !pump_toggle;
+  if(msg->buttons[12]){ // Left arrow
+    active_pump = 0;
   }
-  prev_pump_button_ = pump_button;
-  stepper_cmd = pump_toggle * params_.velocity_limits_pumps[stage_idx];
+  else if (msg->buttons[11]){ // Right arrow
+    active_pump = 1;
+  }
+
+  if(active_pump == 0){ // Pump A
+    if (msg->buttons[13] && !prev_pump_up_button_) { // Up arrow 
+      pump_a_toggle++;
+    }
+    if (msg->buttons[14] && !prev_pump_down_button_) { // Down Arrow
+      pump_a_toggle--;
+    }
+    pump_a_toggle = std::clamp(pump_a_toggle, -1, 1);
+  }
+  else if (active_pump == 1){ // Pump B
+        if (msg->buttons[13] && !prev_pump_up_button_) { // Up arrow 
+      pump_b_toggle++;
+    }
+    if (msg->buttons[14] && !prev_pump_down_button_) { // Down Arrow
+      pump_b_toggle--;
+    }
+    pump_b_toggle = std::clamp(pump_b_toggle, -1, 1);
+  }
+
+  prev_pump_up_button_ = msg->buttons[13];
+  prev_pump_down_button_ = msg->buttons[14];
+
+  pump_right_cmd = pump_a_toggle * params_.velocity_limits_pumps[stage_idx];
+  pump_left_cmd = pump_b_toggle * params_.velocity_limits_pumps[stage_idx];
   
 
-  // -- Lift --
-  // Rack & pinion
+  // -- Scoops Lift --
   // Use stage-dependent "speed" for rack & pinion motion (reuse stepper limits)
-  double rack_speed = params_.velocity_limits_lift[stage_idx];
-  double axis_left = (msg->axes.size() > 1) ? msg->axes[1] : 0.0;
-  double axis_right = (msg->axes.size() > 1) ? msg->axes[3] : 0.0;
+  double scoops_lift_speed = params_.velocity_limits_lift[stage_idx];
+  // double axis_front = (msg->axes.size() > 1) ? msg->axes[1] : 0.0;
+  // double axis_back = (msg->axes.size() > 1) ? msg->axes[3] : 0.0;
 
-  // Integrate axes into positions (position += axis * speed * dt)
-
-  double left_gain = 1.0;
-  double right_gain = 1.0;
-  // rack_left_position  += axis_left  * rack_speed * left_gain * dt;
-  // rack_right_position -= axis_right * rack_speed * right_gain * dt;
-
-  // ** TEMPORARY FOR SAR
-  bool lift_button = (msg->buttons.size() > 11 && msg->buttons[12]);
-  if (lift_button && !prev_lift_button) {
-    lift_toggle = !lift_toggle;
-  }
-  prev_lift_button = lift_button;
+  // // ** TEMPORARY FOR SAR
+  // bool lift_button = (msg->buttons.size() > 11 && msg->buttons[12]);
+  // if (lift_button && !prev_lift_button) {
+  //   lift_toggle = !lift_toggle;
+  // }
+  // prev_lift_button = lift_button;
 
   // Hardcoded values for top and bottom lift position
-  rack_left_position  = lift_toggle ? 203.0 : 156.0;
-  rack_right_position = lift_toggle ? 137.0 : 225.0;
+  scoops_lift_front_vel  = msg->axes[1] * params_.velocity_limits_lift[stage_idx];
+  scoops_lift_back_vel = -msg->axes[1] * params_.velocity_limits_lift[stage_idx];
   // **
 
-  // -- Scoops --
+  // Sampler Lift
+  // double sampler_lift_speed = params_.velocity_limits_sampler_lift[stage_idx];
+  double axis_sampler_lift = (msg->axes.size() > 3) ? msg->axes[3] : 0.0;
+  sampler_lift_front_vel = axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
+  sampler_lift_back_vel = -axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
+  // sampler_lift_front_vel += sampler_lift_speed * axis_sampler_lift * dt;
+  // sampler_lift_back_vel -= sampler_lift_speed * axis_sampler_lift * dt;
+
   // Scoop Spinner (Right Trigger for Vel, Right Bumper for direction)
   double scoop_axis = (msg->axes.size() > 5) ? msg->axes[5] : 0.0;
   bool scoop_reverse = (msg->buttons.size() > 5 && msg->buttons[5]);
   double scoop_spinner_cmd = scoop_axis * params_.velocity_limits_scoop_spinner[stage_idx] * (scoop_reverse ? -1.0 : 1.0);
 
-  // Scoop Servo
-  // Servo A is square
-  bool servo_scoop_a_button = (msg->buttons.size() > 1 && msg->buttons[3]);
-  if (servo_scoop_a_button && !prev_servo_scoop_a_button_) {
-    servo_scoop_a_toggle = !servo_scoop_a_toggle;
-  }
-  prev_servo_scoop_a_button_ = servo_scoop_a_button;
-  scoop_servo_a_position = servo_scoop_a_toggle * params_.position_range_scoop_servo[1];
+  // Conveyor Belt L/R Right joystick
+  conveyor_belt_vel = msg->axes[2];
 
-  // Servo B is X
+  // Scoop Servo
+  bool servo_scoop_f_button = (msg->buttons.size() > 1 && msg->buttons[3]);
+  if (servo_scoop_f_button && !prev_servo_scoop_f_button_) {
+    servo_scoop_f_toggle = !servo_scoop_f_toggle;
+  }
+  prev_servo_scoop_f_button_ = servo_scoop_f_button;
+  scoop_servo_front_pos = servo_scoop_f_toggle * params_.position_range_scoop_servo[1];
+
   bool servo_scoop_b_button = (msg->buttons.size() > 0 && msg->buttons[0]);
   if (servo_scoop_b_button && !prev_servo_scoop_b_button_) {
     servo_scoop_b_toggle = !servo_scoop_b_toggle;
   }
   prev_servo_scoop_b_button_ = servo_scoop_b_button;
-  scoop_servo_b_position = servo_scoop_b_toggle * params_.position_range_scoop_servo[1];
-
-  // -- Sampler --
-  // Sampler Lift
-  double sampler_lift_speed = params_.velocity_limits_sampler_lift[stage_idx];
-  double axis_sampler_lift = (msg->axes.size() > 3) ? msg->axes[3] : 0.0;
-  sampler_lift_pos_l += sampler_lift_speed * axis_sampler_lift * dt;
-  sampler_lift_pos_r -= sampler_lift_speed * axis_sampler_lift * dt;
+  scoop_servo_back_pos = servo_scoop_b_toggle * params_.position_range_scoop_servo[1];
 
   // Auger (Left Trigger for Vel, Left Bumper for direction)
   double auger_axis = (msg->axes.size() > 4) ? msg->axes[4] : 0.0;
@@ -346,7 +368,7 @@ controller_interface::return_type ScienceManual::update(
   //   auger_lift_toggle = !auger_lift_toggle;
   // }
   // prev_auger_lift_button_ = auger_lift_button;
-  // auger_lift_position = auger_lift_toggle ? params_.position_range_auger_lift[1] : params_.position_range_auger_lift[0];
+  // auger_lift_pos = auger_lift_toggle ? params_.position_range_auger_lift[1] : params_.position_range_auger_lift[0];
   double auger_lift_axis = (msg->axes.size() > 0) ? msg->axes[0] : 0.0;
 
   // Use absolute value so direction doesn't matter
@@ -360,74 +382,152 @@ controller_interface::return_type ScienceManual::update(
 
   // Default = max_pos
   // More joystick deflection → move toward min_pos
-  auger_lift_position = max_pos - axis_mag * (max_pos - min_pos);
+  auger_lift_pos = max_pos - axis_mag * (max_pos - min_pos);
 
   // Clamp Positions
-  rack_left_position = std::clamp(rack_left_position,  0.0, 360.0);
-  rack_right_position = std::clamp(rack_right_position, 0.0, 360.0);
-  scoop_servo_a_position = std::clamp(scoop_servo_a_position, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
-  scoop_servo_b_position = std::clamp(scoop_servo_b_position, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
-  sampler_lift_pos_l = std::clamp(sampler_lift_pos_l, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
-  sampler_lift_pos_r = std::clamp(sampler_lift_pos_r, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
-  auger_lift_position = std::clamp(auger_lift_position, params_.position_range_auger_lift[0], params_.position_range_auger_lift[1]);
+  // scoops_lift_front_vel = std::clamp(scoops_lift_front_vel,  0.0, 360.0);
+  // scoops_lift_back_vel = std::clamp(scoops_lift_back_vel, 0.0, 360.0);
+  scoop_servo_front_pos = std::clamp(scoop_servo_front_pos, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
+  scoop_servo_back_pos = std::clamp(scoop_servo_back_pos, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
+  // sampler_lift_front_vel = std::clamp(sampler_lift_front_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
+  // sampler_lift_back_vel = std::clamp(sampler_lift_back_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
+  auger_lift_pos = std::clamp(auger_lift_pos, params_.position_range_auger_lift[0], params_.position_range_auger_lift[1]);
   
   // SET VALUES
   // Stepper motors (position)
-  command_interfaces_[IDX_PUMP_A_VELOCITY].set_value(stepper_cmd * (M_PI / 180.0));
-  command_interfaces_[IDX_PUMP_B_VELOCITY].set_value(stepper_cmd * (M_PI / 180.0));
-  // DC motors (velocity)
-  command_interfaces_[IDX_SAMPLER_LIFT_LEFT_VELOCITY].set_value(sampler_lift_pos_l * (M_PI / 180.0));
-  command_interfaces_[IDX_SAMPLER_LIFT_RIGHT_VELOCITY].set_value(sampler_lift_pos_r * (M_PI / 180.0));
-  command_interfaces_[IDX_SCOOP_SPINNER_VELOCITY].set_value(scoop_spinner_cmd);
+  command_interfaces_[IDX_PUMP_A_VELOCITY].set_value(pump_right_cmd * (M_PI / 180.0));
+  command_interfaces_[IDX_PUMP_B_VELOCITY].set_value(pump_left_cmd * (M_PI / 180.0));
+
+  // -- Servos --
+  // Scoops Lift servos
+  command_interfaces_[IDX_SCOOPS_LIFT_FRONT_VELOCITY].set_value(scoops_lift_front_vel * (M_PI / 180.0));
+  command_interfaces_[IDX_SCOOPS_LIFT_BACK_VELOCITY].set_value(scoops_lift_back_vel * (M_PI / 180.0));
+  
+  // Sampler Lift servos
+  command_interfaces_[IDX_SAMPLER_LIFT_FRONT_VELOCITY].set_value(sampler_lift_front_vel * (M_PI / 180.0));
+  command_interfaces_[IDX_SAMPLER_LIFT_BACK_VELOCITY].set_value(sampler_lift_back_vel * (M_PI / 180.0));
+  
+  // Conveyor Belt
+  command_interfaces_[IDX_CONVEYOR_BELT_VELOCITY].set_value(conveyor_belt_vel * (M_PI / 180.0));
+
   // Scoop servos
-  command_interfaces_[IDX_SCOOP_A_POSITION].set_value(scoop_servo_a_position * (M_PI / 180.0));
-  servo_scoop_b_counter++; // TESTING
-  // if (servo_scoop_b_counter % 100 == 0) { // TESTING
-  command_interfaces_[IDX_SCOOP_B_POSITION].set_value(scoop_servo_b_position * (M_PI / 180.0));
-  // }
+  command_interfaces_[IDX_SCOOP_FRONT_POSITION].set_value(scoop_servo_front_pos * (M_PI / 180.0));
+  command_interfaces_[IDX_SCOOP_BACK_POSITION].set_value(scoop_servo_back_pos * (M_PI / 180.0));
+  
+  // Auger Lift
+  command_interfaces_[IDX_AUGER_LIFT_POSITION].set_value(auger_lift_pos * (M_PI / 180.0));
+  
+  // -- DC --
+  // Scoops Spinner
+  command_interfaces_[IDX_SCOOP_SPINNER_VELOCITY].set_value(scoop_spinner_cmd);
+  
   // Auger & auger_lift
   command_interfaces_[IDX_AUGER_SPINNER_VELOCITY].set_value(auger_spinner_cmd);
-  command_interfaces_[IDX_AUGER_LIFT_POSITION].set_value(auger_lift_position * (M_PI / 180.0));
-  // Rack & pinion servos
-  command_interfaces_[IDX_LEFT_LIFT_POSITION].set_value(rack_left_position * (M_PI / 180.0));
-  command_interfaces_[IDX_RIGHT_LIFT_POSITION].set_value(rack_right_position * (M_PI / 180.0));
 
+
+  // Logger
   std::ostringstream oss;
+  const char * active_pump_name = (active_pump == 0) ? "Pump A" : "Pump B";
   oss << "\033[2J\033[H\n"
     << "========= Science Controller =========\n\n"
-
-    << "  [PUMPS]\n"
-    << "  triangle            : " << pump_button
-    << " | pump_toggle        : " << pump_toggle
-    << " | stepper_cmd        : " << std::fixed << std::setprecision(3) << stepper_cmd << "\n\n"
-
-    << "  [LIFT]\n"
-    << "  right_joystick_btn  : " << lift_button
-    << " | lift_toggle        : " << lift_toggle << "\n"
-    << "  rack_left_position  : " << rack_left_position << "\n"
-    << "  rack_right_position : " << rack_right_position << "\n\n"
-
-    << "  [SCOOPS]\n"
-    << "  right_trigger_axis  : " << scoop_axis
-    << " | right_bumper       : " << scoop_reverse
-    << " | scoop_spinner_cmd  : " << scoop_spinner_cmd << "\n"
-    << "  square              : " << servo_scoop_a_button
-    << " | toggle             : " << servo_scoop_a_toggle
-    << " | scoop_servo_a_pos  : " << scoop_servo_a_position << "\n"
-    << "  x                   : " << servo_scoop_b_button
-    << " | toggle             : " << servo_scoop_b_toggle
-    << " | scoop_servo_b_pos  : " << scoop_servo_b_position << "\n\n"
-
-    << "  [SAMPLER]\n"
-    << "  right_joystick_ud   : " << axis_sampler_lift
-    << " | sampler_lift_pos_l : " << sampler_lift_pos_l
-    << " | sampler_lift_pos_r : " << sampler_lift_pos_r << "\n"
-    << "  left_trigger_axis   : " << auger_axis
-    << " | left_bumper        : " << auger_reverse
-    << " | auger_spinner_cmd  : " << auger_spinner_cmd << "\n"
-    << "  circle              : "
-    << ((msg->buttons.size() > 1) ? msg->buttons[1] : 0)
-    << " | auger_lift_cmd     : " << auger_lift_position << "\n";
+    << "  active pump: " << active_pump_name << " (" << active_pump << ")\n\n"
+    << std::fixed << std::setprecision(3)
+    << "  "
+    << std::left << std::setw(4) << "idx"
+    << std::setw(18) << "actuator"
+    << std::setw(30) << "xbox control"
+    << std::setw(24) << "input value"
+    << "command\n"
+    << "  "
+    << std::setw(4) << "---"
+    << std::setw(18) << "-----------------"
+    << std::setw(30) << "-----------------------------"
+    << std::setw(24) << "-----------------------"
+    << "----------------\n"
+    << "  "
+    << std::setw(4) << "[0]"
+    << std::setw(18) << "pump_a"
+    << std::setw(30) << "Right D-pad, Up/Down D-pad"
+    << std::setw(24) << ("R/U/D=" + std::to_string((msg->buttons.size() > 11) ? msg->buttons[11] : 0) + "/" +
+                         std::to_string((msg->buttons.size() > 13) ? msg->buttons[13] : 0) + "/" +
+                         std::to_string((msg->buttons.size() > 14) ? msg->buttons[14] : 0) +
+                         " t=" + std::to_string(pump_a_toggle))
+    << pump_right_cmd << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[1]"
+    << std::setw(18) << "pump_b"
+    << std::setw(30) << "Left D-pad, Up/Down D-pad"
+    << std::setw(24) << ("L/U/D=" + std::to_string((msg->buttons.size() > 12) ? msg->buttons[12] : 0) + "/" +
+                         std::to_string((msg->buttons.size() > 13) ? msg->buttons[13] : 0) + "/" +
+                         std::to_string((msg->buttons.size() > 14) ? msg->buttons[14] : 0) +
+                         " t=" + std::to_string(pump_b_toggle))
+    << pump_left_cmd << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[2]"
+    << std::setw(18) << "scoops_front"
+    << std::setw(30) << "Left joystick U/D"
+    << std::setw(24) << ("axis[1]=" + std::to_string((msg->axes.size() > 1) ? msg->axes[1] : 0.0))
+    << scoops_lift_front_vel << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[3]"
+    << std::setw(18) << "scoops_back"
+    << std::setw(30) << "Left joystick U/D"
+    << std::setw(24) << ("axis[1]=" + std::to_string((msg->axes.size() > 1) ? msg->axes[1] : 0.0))
+    << scoops_lift_back_vel << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[4]"
+    << std::setw(18) << "sampler_front"
+    << std::setw(30) << "Right joystick U/D"
+    << std::setw(24) << ("axis[3]=" + std::to_string(axis_sampler_lift))
+    << sampler_lift_front_vel << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[5]"
+    << std::setw(18) << "sampler_back"
+    << std::setw(30) << "Right joystick U/D"
+    << std::setw(24) << ("axis[3]=" + std::to_string(axis_sampler_lift))
+    << sampler_lift_back_vel << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[6]"
+    << std::setw(18) << "conveyor"
+    << std::setw(30) << "Right joystick L/R"
+    << std::setw(24) << ("axis[2]=" + std::to_string((msg->axes.size() > 2) ? msg->axes[2] : 0.0))
+    << conveyor_belt_vel << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[7]"
+    << std::setw(18) << "scoop_front"
+    << std::setw(30) << "Y button"
+    << std::setw(24) << ("btn[3]=" + std::to_string((msg->buttons.size() > 3) ? msg->buttons[3] : 0) +
+                         " t=" + std::to_string(servo_scoop_f_toggle))
+    << scoop_servo_front_pos << " deg\n"
+    << "  "
+    << std::setw(4) << "[8]"
+    << std::setw(18) << "scoop_back"
+    << std::setw(30) << "A button"
+    << std::setw(24) << ("btn[0]=" + std::to_string((msg->buttons.size() > 0) ? msg->buttons[0] : 0) +
+                         " t=" + std::to_string(servo_scoop_b_toggle))
+    << scoop_servo_back_pos << " deg\n"
+    << "  "
+    << std::setw(4) << "[9]"
+    << std::setw(18) << "auger_lift"
+    << std::setw(30) << "Left joystick L/R"
+    << std::setw(24) << ("axis[0]=" + std::to_string((msg->axes.size() > 0) ? msg->axes[0] : 0.0))
+    << auger_lift_pos << " deg\n"
+    << "  "
+    << std::setw(4) << "[10]"
+    << std::setw(18) << "scoop_spinner"
+    << std::setw(30) << "Right trigger, Right bumper"
+    << std::setw(24) << ("trig/btn=" + std::to_string(scoop_axis) + "/" +
+                         std::to_string((msg->buttons.size() > 5) ? msg->buttons[5] : 0) +
+                         " r=" + std::to_string(scoop_reverse))
+    << scoop_spinner_cmd << " deg/s\n"
+    << "  "
+    << std::setw(4) << "[11]"
+    << std::setw(18) << "auger_spinner"
+    << std::setw(30) << "Left trigger, Left bumper"
+    << std::setw(24) << ("trig/btn=" + std::to_string(auger_axis) + "/" +
+                         std::to_string((msg->buttons.size() > 4) ? msg->buttons[4] : 0) +
+                         " r=" + std::to_string(auger_reverse))
+    << auger_spinner_cmd << " deg/s\n";
 
   if(DEBUG_MODE == 1){
     RCLCPP_INFO(get_node()->get_logger(), "%s", oss.str().c_str());
@@ -438,9 +538,9 @@ controller_interface::return_type ScienceManual::update(
     if (state_publisher_ && state_publisher_->trylock()) {
       state_publisher_->msg_.header.stamp = get_node()->get_clock()->now();
       state_publisher_->msg_.header.frame_id = joint_name;
-      state_publisher_->msg_.set_point = stepper_cmd;
+      state_publisher_->msg_.set_point = pump_right_cmd;
       state_publisher_->msg_.process_value = auger_spinner_cmd;
-      state_publisher_->msg_.command = sampler_lift_pos_l;
+      state_publisher_->msg_.command = sampler_lift_front_vel;
       state_publisher_->unlockAndPublish();
     }
   }

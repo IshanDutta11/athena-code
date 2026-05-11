@@ -11,12 +11,31 @@
                 <param name="can_id">0x80</param>
             </hardware>
 
-            <joint name="servo_rack_and_pinion_l">
+            <joint name="servo_scoops_lift_l">
+                <param name="node_id">0x0</param>
+                <param name="gear_ratio">1</param>
+                <param name="max_vel">300</param> <!-- deg/s -->
+                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) When prismatic, convert motor position in degrees to displacement in meters -->
+                <param name="servo_type">continuous</param> <!-- standard or continuous -->
+                <param name="joint_type">revolute</param> <!-- revolute or prismatic -->
+                <command_interface name="position"/>
+                <command_interface name="velocity"/>
+                <command_interface name="status_request"/>
+                <command_interface name="maintenance_request"/>
+                <command_interface name="maintenance_frame_high"/>
+                <command_interface name="maintenance_frame_low"/>
+                <command_interface name="maintenance_data_count"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="status"/>
+            </joint>
+
+            <joint name="servo_scoops_lift_r">
                 <param name="node_id">0x1</param>
                 <param name="gear_ratio">1</param>
-                <param name="max_pos">235</param> <!-- degrees -->
-                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) convert motor position in degrees to displacement in meters -->
-                <param name="servo_type">standard</param> <!-- standard or continuous -->
+                <param name="max_vel">300</param> <!-- deg/s -->
+                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) When prismatic, convert motor position in degrees to displacement in meters -->
+                <param name="servo_type">continuous</param> <!-- standard or continuous -->
                 <param name="joint_type">revolute</param> <!-- revolute or prismatic -->
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
@@ -30,12 +49,12 @@
                 <state_interface name="status"/>
             </joint>
 
-            <joint name="servo_rack_and_pinion_r">
+            <joint name="servo_sampler_lift_l">
                 <param name="node_id">0x2</param>
                 <param name="gear_ratio">1</param>
-                <param name="max_pos">235</param> <!-- degrees -->
-                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) convert motor position in degrees to displacement in meters -->
-                <param name="servo_type">standard</param> <!-- standard or continuous -->
+                <param name="max_vel">300</param> <!-- deg/s -->
+                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) When prismatic, convert motor position in degrees to displacement in meters -->
+                <param name="servo_type">continuous</param> <!-- standard or continuous -->
                 <param name="joint_type">revolute</param> <!-- revolute or prismatic -->
                 <command_interface name="position"/>
                 <command_interface name="velocity"/>
@@ -49,8 +68,46 @@
                 <state_interface name="status"/>
             </joint>
 
-            <joint name="servo_scoop_a">
-                <param name="node_id">0x3</param> <!-- 0x5 -->
+            <joint name="servo_sampler_lift_r">
+                <param name="node_id">0x3</param>
+                <param name="gear_ratio">1</param>
+                <param name="max_vel">300</param> <!-- deg/s -->
+                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) When prismatic, convert motor position in degrees to displacement in meters -->
+                <param name="servo_type">continuous</param> <!-- standard or continuous -->
+                <param name="joint_type">revolute</param> <!-- revolute or prismatic -->
+                <command_interface name="position"/>
+                <command_interface name="velocity"/>
+                <command_interface name="status_request"/>
+                <command_interface name="maintenance_request"/>
+                <command_interface name="maintenance_frame_high"/>
+                <command_interface name="maintenance_frame_low"/>
+                <command_interface name="maintenance_data_count"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="status"/>
+            </joint>
+
+            <joint name="servo_conveyor_belt">
+                <param name="node_id">0x4</param>
+                <param name="gear_ratio">1</param>
+                <param name="max_vel">300</param> <!-- deg/s -->
+                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) When prismatic, convert motor position in degrees to displacement in meters -->
+                <param name="servo_type">continuous</param> <!-- standard or continuous -->
+                <param name="joint_type">revolute</param> <!-- revolute or prismatic -->
+                <command_interface name="position"/>
+                <command_interface name="velocity"/>
+                <command_interface name="status_request"/>
+                <command_interface name="maintenance_request"/>
+                <command_interface name="maintenance_frame_high"/>
+                <command_interface name="maintenance_frame_low"/>
+                <command_interface name="maintenance_data_count"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+                <state_interface name="status"/>
+            </joint>
+
+            <joint name="servo_scoop_f">
+                <param name="node_id">0x5</param> <!-- 0x5 -->
                 <param name="gear_ratio">1</param>
                 <param name="max_pos">178</param> <!-- degrees -->
                 <param name="servo_type">standard</param> <!-- standard / continuous -->
@@ -68,7 +125,7 @@
             </joint>
 
             <joint name="servo_scoop_b">
-                <param name="node_id">0x5</param> <!-- 0x3 -->
+                <param name="node_id">0x6</param> <!-- 0x3 -->
                 <param name="gear_ratio">1</param>
                 <param name="max_pos">178</param> <!-- degrees -->
                 <param name="servo_type">standard</param> <!-- standard / continuous -->
@@ -85,46 +142,8 @@
                 <state_interface name="status"/>
             </joint>
 
-            <joint name="servo_sampler_lift_l">
-                <param name="node_id">0x6</param>
-                <param name="gear_ratio">1</param>
-                <param name="max_pos">360</param> <!-- degrees -->
-                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) convert motor position in degrees to displacement in meters -->
-                <param name="servo_type">standard</param> <!-- standard / continuous -->
-                <param name="joint_type">revolute</param> <!-- revolute / prismatic -->
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="status_request"/>
-                <command_interface name="maintenance_request"/>
-                <command_interface name="maintenance_frame_high"/>
-                <command_interface name="maintenance_frame_low"/>
-                <command_interface name="maintenance_data_count"/>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="status"/>
-            </joint>
-
-            <joint name="servo_sampler_lift_r">
-                <param name="node_id">0x4</param>
-                <param name="gear_ratio">1</param>
-                <param name="max_pos">360</param> <!-- degrees -->
-                <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) convert motor position in degrees to displacement in meters -->
-                <param name="servo_type">standard</param> <!-- standard / continuous -->
-                <param name="joint_type">revolute</param> <!-- revolute / prismatic -->
-                <command_interface name="position"/>
-                <command_interface name="velocity"/>
-                <command_interface name="status_request"/>
-                <command_interface name="maintenance_request"/>
-                <command_interface name="maintenance_frame_high"/>
-                <command_interface name="maintenance_frame_low"/>
-                <command_interface name="maintenance_data_count"/>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="status"/>
-            </joint>
-
             <joint name="servo_auger_lift">
-                <param name="node_id">0x0</param>
+                <param name="node_id">0x7</param>
                 <param name="gear_ratio">1</param>
                 <param name="max_pos">270</param> <!-- degrees -->
                 <param name ="meters_per_deg">0.00016666666</param> <!-- (TODO) convert motor position in degrees to displacement in meters -->
@@ -141,6 +160,8 @@
                 <state_interface name="velocity"/>
                 <state_interface name="status"/>
             </joint>
+
+            
         </ros2_control>
     </xacro:macro>
 </robot>

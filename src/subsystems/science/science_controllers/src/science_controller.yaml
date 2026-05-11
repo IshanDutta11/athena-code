@@ -47,35 +47,18 @@ science_manual:
     validation:
       not_empty<>: null
 
-  lift_rack_and_pinion_l:
+  scoops_lift_l:
     type: string
-    default_value: "servo_rack_and_pinion_l"
+    default_value: "servo_scoops_lift_l"
     description: "The Servo motor controller for the left-sided rack and pinion"
     read_only: true
     validation:
       not_empty<>: null
 
-  lift_rack_and_pinion_r:
+  scoops_lift_r:
     type: string
-    default_value: "servo_rack_and_pinion_r"
+    default_value: "servo_scoops_lift_r"
     description: "The Servo motor controller for the right-sided rack and pinion"
-    read_only: true
-    validation:
-      not_empty<>: null
-
-  scoop_servos:
-    type: string_array
-    default_value: ["servo_scoop_a", "servo_scoop_b"]
-    description: "The servos for the scoop (2 servos)"
-    read_only: true
-    validation:
-      unique<>: null
-      not_empty<>: null
-
-  scoop_spinner:
-    type: string
-    default_value: "dc_scoop"
-    description: "Scoop DC motor"
     read_only: true
     validation:
       not_empty<>: null
@@ -91,6 +74,29 @@ science_manual:
     default_value: "servo_sampler_lift_r"
     description: "(Optional)"
     read_only: false
+
+  conveyor_belt:
+    type: string
+    default_value: "servo_conveyor_belt"
+    description: "(Optional)"
+    read_only: false
+  
+  scoop_servos:
+    type: string_array
+    default_value: ["servo_scoop_f", "servo_scoop_b"]
+    description: "The servos for the scoop (2 servos)"
+    read_only: true
+    validation:
+      unique<>: null
+      not_empty<>: null
+
+  scoop_spinner:
+    type: string
+    default_value: "dc_scoop"
+    description: "Scoop DC motor"
+    read_only: true
+    validation:
+      not_empty<>: null
 
   auger_spinner:
     type: string
@@ -116,7 +122,7 @@ science_manual:
   # Lift
   velocity_limits_lift:
     type: double_array
-    default_value: [20.0, 0.1, 0.0, 0.3]
+    default_value: [300.0, 0.1, 0.0, 0.3]
     validation:
       fixed_size<>: 4
 

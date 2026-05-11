@@ -13,7 +13,7 @@
         <param name="can_interface">${can_interface}</param>
         <param name="can_id">0x70</param>
       </hardware>
-
+<!-- 
       <joint name="dc_auger">
         <param name="node_id">0</param>
         <param name="joint_type">revolute</param>
@@ -32,13 +32,13 @@
         <state_interface name="status"/>
         <state_interface name="motor_temperature"/>
         <state_interface name="torque_current"/>
-      </joint>
+      </joint> -->
 
       <joint name="dc_scoop">
-        <param name="node_id">1</param>
+        <param name="node_id">0</param>
         <param name="joint_type">revolute</param>
 
-        <param name="gear_ratio">50.9</param>
+        <param name="gear_ratio">1</param>
         <param name="inverted">true</param>
         <command_interface name="position"/>
         <command_interface name="velocity"/>

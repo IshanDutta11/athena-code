@@ -39,7 +39,7 @@
     <xacro:dc_ros2_control name="dc" can_interface="$(arg can_interface)"/>
 
     <!-- Import talon ros2_control description -->
-    <!-- <xacro:talon_ros2_control name="talon" deactivate_talon="$(arg deactivate_talon)" can_interface="$(arg can_interface)"/> -->
+    <xacro:talon_ros2_control name="talon" deactivate_talon="$(arg deactivate_talon)" can_interface="$(arg can_interface)"/>
 
     <!-- Import laser ros2_control description (CAN-based) -->
     <xacro:laser_ros2_control name="spectrometry_laser" can_interface="$(arg can_interface)"/>
