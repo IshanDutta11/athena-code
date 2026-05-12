@@ -29,10 +29,10 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_scoops_lift_l
-      - servo_scoops_lift_r
-      - servo_sampler_lift_l
-      - servo_sampler_lift_r
+      - servo_scoops_lift_f
+      - servo_scoops_lift_b
+      - servo_sampler_lift_f
+      - servo_sampler_lift_b
       - servo_conveyor_belt
       - servo_scoop_f
       - servo_scoop_b
@@ -46,10 +46,10 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_scoops_lift_l
-      - servo_scoops_lift_r
-      - servo_sampler_lift_l
-      - servo_sampler_lift_r
+      - servo_scoops_lift_f
+      - servo_scoops_lift_b
+      - servo_sampler_lift_f
+      - servo_sampler_lift_b
       - servo_conveyor_belt
       - servo_scoop_f
       - servo_scoop_b
@@ -65,12 +65,12 @@
     pump_b: "stepper_motor_b"
     
     # Scoops Lift
-    scoops_lift_l: "servo_scoops_lift_l"
-    scoops_lift_r: "servo_scoops_lift_r"
+    scoops_lift_f: "servo_scoops_lift_f"
+    scoops_lift_b: "servo_scoops_lift_b"
 
     # Sampler
-    sampler_lift_l: "servo_sampler_lift_l"
-    sampler_lift_r: "servo_sampler_lift_r"
+    sampler_lift_f: "servo_sampler_lift_f"
+    sampler_lift_b: "servo_sampler_lift_b"
 
     # Conveyor Belt
     conveyor_belt: "servo_conveyor_belt"
@@ -126,10 +126,10 @@
     joints:
       - stepper_motor_a
       - stepper_motor_b
-      - servo_scoops_lift_l
-      - servo_scoops_lift_r
-      - servo_sampler_lift_l
-      - servo_sampler_lift_r
+      - servo_scoops_lift_f
+      - servo_scoops_lift_b
+      - servo_sampler_lift_f
+      - servo_sampler_lift_b
       - servo_conveyor_belt
       - servo_scoop_f
       - servo_scoop_b
@@ -171,10 +171,10 @@
       stepper_motor_b:
         interfaces:
           - status
-      servo_scoops_lift_l:
+      servo_scoops_lift_f:
         interfaces:
           - status
-      servo_scoops_lift_r:
+      servo_scoops_lift_b:
         interfaces:
           - status
       servo_conveyor_belt:
@@ -189,10 +189,10 @@
       dc_scoop:
         interfaces:
           - status
-      servo_sampler_lift_l:
+      servo_sampler_lift_f:
         interfaces:
           - status
-      servo_sampler_lift_r:
+      servo_sampler_lift_b:
         interfaces:
           - status
       dc_auger:

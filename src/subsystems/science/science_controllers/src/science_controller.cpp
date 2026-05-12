@@ -69,10 +69,10 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
   // Fill each joint variable
   pump_a = params_.pump_a;
   pump_b = params_.pump_b;
-  scoops_lift_l = params_.scoops_lift_l;
-  scoops_lift_r = params_.scoops_lift_r;
-  sampler_lift_l = params_.sampler_lift_l;
-  sampler_lift_r = params_.sampler_lift_r;
+  scoops_lift_f = params_.scoops_lift_f;
+  scoops_lift_b = params_.scoops_lift_b;
+  sampler_lift_f = params_.sampler_lift_f;
+  sampler_lift_b = params_.sampler_lift_b;
   conveyor_belt = params_.conveyor_belt;
   scoop_servos = params_.scoop_servos;
   scoop_spinner = params_.scoop_spinner;
@@ -93,27 +93,27 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
   }; 
 
   servo_joints_ = params_.scoop_servos;
-  servo_joints_.push_back(params_.sampler_lift_l);
-  servo_joints_.push_back(params_.sampler_lift_r);
+  servo_joints_.push_back(params_.sampler_lift_f);
+  servo_joints_.push_back(params_.sampler_lift_b);
   servo_joints_.push_back(params_.auger_lift);
 
   scoops_lift_joints_.clear();
-  scoops_lift_joints_.push_back(params_.scoops_lift_l);
-  scoops_lift_joints_.push_back(params_.scoops_lift_r);
+  scoops_lift_joints_.push_back(params_.scoops_lift_f);
+  scoops_lift_joints_.push_back(params_.scoops_lift_b);
 
   // Populate joints vector
   joints_.clear();
 
   joints_.push_back(pump_a);
   joints_.push_back(pump_b);
-  joints_.push_back(scoops_lift_l);
-  joints_.push_back(scoops_lift_r);
+  joints_.push_back(scoops_lift_f);
+  joints_.push_back(scoops_lift_b);
 
   joints_.insert(joints_.end(), scoop_servos.begin(), scoop_servos.end());
 
   joints_.push_back(scoop_spinner);
-  joints_.push_back(sampler_lift_l);
-  joints_.push_back(sampler_lift_r);
+  joints_.push_back(sampler_lift_f);
+  joints_.push_back(sampler_lift_b);
   joints_.push_back(conveyor_belt);
   joints_.push_back(auger_spinner);
   joints_.push_back(auger_lift);
@@ -191,8 +191,8 @@ controller_interface::InterfaceConfiguration ScienceManual::command_interface_co
   }
 
   // Sampler Lift
-  cfg.names.push_back(sampler_lift_l + "/velocity");
-  cfg.names.push_back(sampler_lift_r + "/velocity");
+  cfg.names.push_back(sampler_lift_f + "/velocity");
+  cfg.names.push_back(sampler_lift_b + "/velocity");
 
   // Conveyor Belt
   cfg.names.push_back(conveyor_belt + "/velocity");
@@ -330,7 +330,7 @@ controller_interface::return_type ScienceManual::update(
   // double sampler_lift_speed = params_.velocity_limits_sampler_lift[stage_idx];
   double axis_sampler_lift = (msg->axes.size() > 3) ? msg->axes[3] : 0.0;
   sampler_lift_front_vel = axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
-  sampler_lift_back_vel = -axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
+  sampler_lift_back_vel = axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
   // sampler_lift_front_vel += sampler_lift_speed * axis_sampler_lift * dt;
   // sampler_lift_back_vel -= sampler_lift_speed * axis_sampler_lift * dt;
 

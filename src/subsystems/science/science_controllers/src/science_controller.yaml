@@ -47,31 +47,31 @@ science_manual:
     validation:
       not_empty<>: null
 
-  scoops_lift_l:
+  scoops_lift_f:
     type: string
-    default_value: "servo_scoops_lift_l"
+    default_value: "servo_scoops_lift_f"
     description: "The Servo motor controller for the left-sided rack and pinion"
     read_only: true
     validation:
       not_empty<>: null
 
-  scoops_lift_r:
+  scoops_lift_b:
     type: string
-    default_value: "servo_scoops_lift_r"
+    default_value: "servo_scoops_lift_b"
     description: "The Servo motor controller for the right-sided rack and pinion"
     read_only: true
     validation:
       not_empty<>: null
 
-  sampler_lift_l:
+  sampler_lift_f:
     type: string
-    default_value: "servo_sampler_lift_l"
+    default_value: "servo_sampler_lift_f"
     description: "(Optional)"
     read_only: false
 
-  sampler_lift_r:
+  sampler_lift_b:
     type: string
-    default_value: "servo_sampler_lift_r"
+    default_value: "servo_sampler_lift_b"
     description: "(Optional)"
     read_only: false
 
@@ -122,17 +122,17 @@ science_manual:
   # Lift
   velocity_limits_lift:
     type: double_array
-    default_value: [300.0, 0.1, 0.0, 0.3]
+    default_value: [200.0, 0.1, 0.0, 0.3]
     validation:
       fixed_size<>: 4
 
-  position_range_lift_left:
+  position_range_lift_feft:
     type: double_array
     default_value: [75.0, 235.0]
     validation:
       fixed_size<>: 2
 
-  position_range_lift_right:
+  position_range_lift_bight:
     type: double_array
     default_value: [30.0, 235.0]
     validation:
@@ -147,7 +147,7 @@ science_manual:
 
   velocity_limits_scoop_spinner:
     type: double_array
-    default_value: [15.0, 0.0, 0.6, 0.0]
+    default_value: [500.0, 0.0, 0.6, 0.0]
     validation:
       fixed_size<>: 4
 
@@ -160,7 +160,7 @@ science_manual:
 
   velocity_limits_sampler_lift:
     type: double_array
-    default_value: [50.0, 0.0, 0.0, 0.6]
+    default_value: [100.0, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 

@@ -129,12 +129,12 @@ protected:
 
   std::string pump_a;
   std::string pump_b;
-  std::string scoops_lift_l;
-  std::string scoops_lift_r;
+  std::string scoops_lift_f;
+  std::string scoops_lift_b;
   std::vector<std::string> scoop_servos;
   std::string scoop_spinner;
-  std::string sampler_lift_l;
-  std::string sampler_lift_r;
+  std::string sampler_lift_f;
+  std::string sampler_lift_b;
   std::string conveyor_belt;
   std::string auger_spinner;
   std::string auger_lift;
