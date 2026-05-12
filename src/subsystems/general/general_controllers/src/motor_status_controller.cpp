@@ -404,9 +404,9 @@ controller_interface::return_type MotorStatusController::update(
       for (const auto & [resource_name, resource_cfg] : interface_map) {
         msgs::msg::JointStatus status;
         status.joint_name = resource_name;
-        status.temperature = std::numeric_limits<int8_t>::quiet_NaN();
+        status.temperature = std::numeric_limits<double>::quiet_NaN();
         status.torque_current = std::numeric_limits<double>::quiet_NaN();
-        status.motor_status = std::numeric_limits<int8_t>::quiet_NaN();
+        status.motor_status = std::numeric_limits<uint32_t>::quiet_NaN();
 
         for (const auto & interface_name : resource_cfg.interfaces) {
           std::string key = resource_name + "/" + interface_name;
@@ -419,11 +419,11 @@ controller_interface::return_type MotorStatusController::update(
           double value = state_interfaces_[it->second].get_value();
 
           if (interface_name == "motor_temperature") {
-            status.temperature = static_cast<int8_t>(value);
+            status.temperature = value;
           } else if (interface_name == "torque_current") {
             status.torque_current = value;
           } else if (interface_name == "status") {
-            status.motor_status = static_cast<int8_t>(value);
+            status.motor_status = static_cast<uint32_t>(value);
             if (value > sizeof(MotorStatus)) {
               RCLCPP_WARN(get_node()->get_logger(), "Invalid motor status value");
             }

@@ -83,6 +83,7 @@ private:
     double motor_temperature;
     double motor_torque_current;
     double motor_status;
+    std::string status_msg;
 
     double joint_command_position;
     double joint_command_velocity;

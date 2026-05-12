@@ -126,16 +126,20 @@ hardware_interface::CallbackReturn TALONHardwareInterface::on_init(
       mc,
       nullptr,
       integration_level_t::POSITION,
+
       0.0,
       0.0,
       0.0,
       0.0,
       0.0,
+      "",
+
       0.0,
       0.0,
       0.0,
       0.0,
       0.0,
+
       state_if_names,
       command_if_names,
       params_map
@@ -276,7 +280,9 @@ hardware_interface::return_type TALONHardwareInterface::read(
 
     joint.motor_temperature = joint.motor->GetTemperature();
     joint.motor_torque_current = joint.motor->GetOutputCurrent();
-    joint.motor_status = 1.0;
+    joint.motor_status = static_cast<double>(joint.motor->GetLastError());
+
+    statusStringGenerator(joint.motor_status, joint.status_msg);
   }
   return hardware_interface::return_type::OK;
 }

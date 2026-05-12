@@ -75,6 +75,7 @@ struct Axis {
     // State (ODrives => ros2_control)
     // rclcpp::Time encoder_estimates_timestamp_;
     uint32_t axis_error_ = 0;
+    double double_axis_error_ = 0.0;
     uint8_t axis_state_ = 0;
     uint8_t procedure_result_ = 0;
     uint8_t trajectory_done_flag_ = 0;
@@ -270,11 +271,15 @@ std::vector<hardware_interface::StateInterface> ODriveHardwareInterface::export_
             "motor_temperature", 
             &axes_[i].motor_temperature_
         ));
-
         state_interfaces.emplace_back(hardware_interface::StateInterface(
             info_.joints[i].name,
             "torque_current",
             &axes_[i].bus_current_
+        ));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            info_.joints[i].name,
+            "status",
+            &axes_[i].double_axis_error_
         ));
     }
 
@@ -507,6 +512,8 @@ void Axis::on_can_msg(const rclcpp::Time&, const can_frame& frame) {
                 axis_state_ = msg.Axis_State;
                 procedure_result_ = msg.Procedure_Result;
                 trajectory_done_flag_ = msg.Trajectory_Done_Flag;
+
+                double_axis_error_ = static_cast<double>(axis_error_);
             }
         } break;
             // silently ignore unimplemented command IDs

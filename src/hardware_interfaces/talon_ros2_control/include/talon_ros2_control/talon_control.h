@@ -53,4 +53,7 @@ float setPositionFromDisplacement(TalonSRX * motor, double displacement_m, int m
 float setPositionFromJointCommand(TalonSRX * motor, double position_rad, int ms, const MotorConfig & config);
 void  stopMotor(TalonSRX * motor, int ms);
 
+// Helper functions
+void statusStringGenerator(int32_t status, std::string & msg);
+
 #endif

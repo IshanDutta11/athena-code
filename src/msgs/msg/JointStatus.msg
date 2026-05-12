@@ -1,4 +1,4 @@
 string joint_name
-int8 temperature
+float64 temperature
 float64 torque_current
-int8 motor_status
+uint32 motor_status
