@@ -34,7 +34,7 @@
         <state_interface name="torque_current"/>
       </joint> -->
 
-      <joint name="dc_scoop">
+      <!-- <joint name="dc_scoop">
         <param name="node_id">1</param>
         <param name="joint_type">revolute</param>
 
@@ -52,7 +52,7 @@
         <state_interface name="status"/>
         <state_interface name="motor_temperature"/>
         <state_interface name="torque_current"/>
-      </joint>
+      </joint> -->
 
     </ros2_control>
 

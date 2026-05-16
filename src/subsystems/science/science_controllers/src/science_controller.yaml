@@ -141,13 +141,13 @@ science_manual:
   # Scoops
   position_range_scoop_servo:
     type: double_array
-    default_value: [0.0, 120.0]
+    default_value: [0.0, 100.0]
     validation:
       fixed_size<>: 2
 
   velocity_limits_scoop_spinner:
     type: double_array
-    default_value: [500.0, 0.0, 0.6, 0.0]
+    default_value: [100.0, 0.0, 0.6, 0.0]
     validation:
       fixed_size<>: 4
 

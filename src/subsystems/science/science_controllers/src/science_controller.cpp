@@ -19,7 +19,7 @@
 
 #include "controller_interface/helpers.hpp"
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 namespace
 {
@@ -141,7 +141,7 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
 
   // Reference subscriber
   ref_subscriber_ = get_node()->create_subscription<ControllerReferenceMsg>(
-    "/science_manual", subscribers_qos,
+    "/science/science_manual", subscribers_qos,
     std::bind(&ScienceManual::reference_callback, this, std::placeholders::_1));
 
   std::shared_ptr<ControllerReferenceMsg> msg = std::make_shared<ControllerReferenceMsg>();
@@ -150,7 +150,7 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
 
   // State publisher
   s_publisher_ = get_node()->create_publisher<ControllerStateMsg>(
-    "/science_manual/state", rclcpp::QoS(rclcpp::KeepLast(1)));
+    "/science/science_manual/state", rclcpp::QoS(rclcpp::KeepLast(1)));
   state_publisher_ = std::make_unique<ControllerStatePublisher>(s_publisher_);
 
   if (state_publisher_ && state_publisher_->trylock()) {
