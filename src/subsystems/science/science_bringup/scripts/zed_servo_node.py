@@ -10,6 +10,16 @@ import numpy as np
 from pathlib import Path
 import time
 import os
+#To run the following node: 
+#ros2 run drive_bringup zed_servo_node.py (I kinda forgot where the node was supposed to be)
+#ros2 run science_bringup zed_servo_node.py
+#
+#Panorama Service sits in science
+#ros2 service call /take_panorama science_bringup/TakePanorama     "{take_panorama: True, frames: 31, max_angle: 270.0}"
+
+#I think I was implied to make this but I never made this
+#Zed Servo rotate left/right
+#ros2 service call /servo_turn science_bringup/Servo_Turn          "data:[]" (degree to turn to)/270
 
 #Mulitple nodes within the same porgram...
 
@@ -29,7 +39,6 @@ def crop_black_borders(image):
 class Zed_Servo_Node(Node):
     #Node Parameters: take_panorama:bool <-- Do we take the panorama? 
     #angle: 0.0 - 360.0 | frames = 100 - 2000
-    # ros2 run node 360, 2000 0 0 
     def __init__(self):
         #Ros2 service call
         super().__init__(node_name="zed_servo_node")
@@ -66,7 +75,7 @@ class Zed_Servo_Node(Node):
         
         ##Subscribe to the heading
         ##heading_topic
-        self.subscription = self.create_subscription(#/sub/request
+        self.subscription = self.create_subscription(#can you check if the subscription is correct? 
             String,
             "sensor_msgs/msg/NavSatFix",
             self.set_header,
@@ -139,7 +148,7 @@ class Zed_Servo_Node(Node):
         cv_image_list = []
         current_angle = 0.0
         #Makes directory called temp_photos if one doesn't exist
-        dir_path = "temp_photos"
+        dir_path = "temp_photos"#Please Help me name this something official (or whatever is good with base station)
         os.makedirs(dir_path, exist_ok=True)
         #Iterate through X Amount of images + Rotations
         rotate_amount = total_angle/(frames-1)
