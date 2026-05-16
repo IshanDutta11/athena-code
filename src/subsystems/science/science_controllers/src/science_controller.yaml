@@ -138,8 +138,14 @@ science_manual:
     validation:
       fixed_size<>: 2
 
-  # Scoops
-  position_range_scoop_servo:
+  # Scoops  
+  position_range_scoop_servo_f:
+    type: double_array
+    default_value: [10.0, 100.0]
+    validation:
+      fixed_size<>: 2
+
+  position_range_scoop_servo_b:
     type: double_array
     default_value: [0.0, 100.0]
     validation:

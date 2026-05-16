@@ -348,14 +348,14 @@ controller_interface::return_type ScienceManual::update(
     servo_scoop_f_toggle = !servo_scoop_f_toggle;
   }
   prev_servo_scoop_f_button_ = servo_scoop_f_button;
-  scoop_servo_front_pos = servo_scoop_f_toggle * params_.position_range_scoop_servo[1];
+  scoop_servo_front_pos = servo_scoop_f_toggle * params_.position_range_scoop_servo_f[1];
 
   bool servo_scoop_b_button = (msg->buttons.size() > 0 && msg->buttons[0]);
   if (servo_scoop_b_button && !prev_servo_scoop_b_button_) {
     servo_scoop_b_toggle = !servo_scoop_b_toggle;
   }
   prev_servo_scoop_b_button_ = servo_scoop_b_button;
-  scoop_servo_back_pos = servo_scoop_b_toggle * params_.position_range_scoop_servo[1];
+  scoop_servo_back_pos = servo_scoop_b_toggle * params_.position_range_scoop_servo_b[1];
 
   // Auger (Left Trigger for Vel, Left Bumper for direction)
   double auger_axis = (msg->axes.size() > 4) ? msg->axes[4] : 0.0;
@@ -387,8 +387,8 @@ controller_interface::return_type ScienceManual::update(
   // Clamp Positions
   // scoops_lift_front_vel = std::clamp(scoops_lift_front_vel,  0.0, 360.0);
   // scoops_lift_back_vel = std::clamp(scoops_lift_back_vel, 0.0, 360.0);
-  scoop_servo_front_pos = std::clamp(scoop_servo_front_pos, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
-  scoop_servo_back_pos = std::clamp(scoop_servo_back_pos, params_.position_range_scoop_servo[0], params_.position_range_scoop_servo[1]);
+  scoop_servo_front_pos = std::clamp(scoop_servo_front_pos, params_.position_range_scoop_servo_f[0], params_.position_range_scoop_servo_f[1]);
+  scoop_servo_back_pos = std::clamp(scoop_servo_back_pos, params_.position_range_scoop_servo_b[0], params_.position_range_scoop_servo_b[1]);
   // sampler_lift_front_vel = std::clamp(sampler_lift_front_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
   // sampler_lift_back_vel = std::clamp(sampler_lift_back_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
   auger_lift_pos = std::clamp(auger_lift_pos, params_.position_range_auger_lift[0], params_.position_range_auger_lift[1]);
