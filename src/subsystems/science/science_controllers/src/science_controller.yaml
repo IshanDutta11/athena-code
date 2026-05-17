@@ -119,71 +119,78 @@ science_manual:
     validation:
       fixed_size<>: 4
 
-  # Lift
-  velocity_limits_lift:
+  # Scoops Lift
+  velocity_limits_scoops_lift:
     type: double_array
     default_value: [200.0, 0.1, 0.0, 0.3]
     validation:
       fixed_size<>: 4
 
-  position_range_lift_feft:
-    type: double_array
-    default_value: [75.0, 235.0]
-    validation:
-      fixed_size<>: 2
+  # position_range_lift_feft:
+  #   type: double_array
+  #   default_value: [75.0, 235.0]
+  #   validation:
+  #     fixed_size<>: 2
 
-  position_range_lift_bight:
-    type: double_array
-    default_value: [30.0, 235.0]
-    validation:
-      fixed_size<>: 2
+  # position_range_lift_bight:
+  #   type: double_array
+  #   default_value: [30.0, 235.0]
+  #   validation:
+  #     fixed_size<>: 2
 
   # Scoops  
   position_range_scoop_servo_f:
     type: double_array
-    default_value: [10.0, 100.0]
+    default_value: [20.0, 120.0]
     validation:
       fixed_size<>: 2
 
   position_range_scoop_servo_b:
     type: double_array
-    default_value: [0.0, 100.0]
+    default_value: [0.0, 110.0]
     validation:
       fixed_size<>: 2
 
   velocity_limits_scoop_spinner:
     type: double_array
-    default_value: [75.0, 0.0, 0.6, 0.0]
+    default_value: [30.0, 0.0, 0.6, 0.0]
     validation:
       fixed_size<>: 4
 
   # Sampler
-  position_range_sampler_lift:
-    type: double_array
-    default_value: [0.0, 360.0]
-    validation:
-      fixed_size<>: 2
+  # position_range_sampler_lift:
+  #   type: double_array
+  #   default_value: [0.0, 360.0]
+  #   validation:
+  #     fixed_size<>: 2
 
   velocity_limits_sampler_lift:
     type: double_array
-    default_value: [100.0, 0.0, 0.0, 0.6]
+    default_value: [200.0, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 
   velocity_limits_auger:
     type: double_array
-    default_value: [5.0, 0.0, 0.0, 0.6]
+    default_value: [2.5, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 
-  velocity_limits_auger_lift:
-    type: double_array
-    default_value: [10.0, 0.0, 0.0, 0.6]
-    validation:
-      fixed_size<>: 4
+  # velocity_limits_auger_lift:
+  #   type: double_array
+  #   default_value: [5.0, 0.0, 0.0, 0.6]
+  #   validation:
+  #     fixed_size<>: 4
 
   position_range_auger_lift:
     type: double_array
     default_value: [5.0, 360.0]
     validation:
       fixed_size<>: 2
+
+  # Conveyor Belt
+  velocity_limits_conveyor_belt:
+    type: double_array
+    default_value: [200.0, 0.0, 0.0, 0.6]
+    validation:
+      fixed_size<>: 4

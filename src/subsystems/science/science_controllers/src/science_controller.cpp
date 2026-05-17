@@ -44,7 +44,7 @@ controller_interface::CallbackReturn ScienceManual::on_init()
 {
   control_mode_.initRT(control_mode_type::STAGE1);
 
-  servo_scoop_f_toggle = false;
+  // servo_scoop_f_toggle = false;
   servo_scoop_b_counter = 0; // TESTING
 
   try {
@@ -261,7 +261,7 @@ controller_interface::CallbackReturn ScienceManual::on_deactivate(
 
 controller_interface::return_type ScienceManual::update(
   const rclcpp::Time & /*time*/,
-  const rclcpp::Duration & period)
+  const rclcpp::Duration & /*period*/)
 {
   auto current_ref = input_ref_.readFromRT();
 
@@ -269,7 +269,6 @@ controller_interface::return_type ScienceManual::update(
     return controller_interface::return_type::OK;
   }
 
-  double dt = period.seconds();
   auto msg = *current_ref;  // shared_ptr<sensor_msgs::msg::Joy>
   int stage_idx = static_cast<int>(current_mode_);  // corresponds to STAGE1..STAGE4
 
@@ -309,21 +308,9 @@ controller_interface::return_type ScienceManual::update(
   
 
   // -- Scoops Lift --
-  // Use stage-dependent "speed" for rack & pinion motion (reuse stepper limits)
-  double scoops_lift_speed = params_.velocity_limits_lift[stage_idx];
-  // double axis_front = (msg->axes.size() > 1) ? msg->axes[1] : 0.0;
-  // double axis_back = (msg->axes.size() > 1) ? msg->axes[3] : 0.0;
-
-  // // ** TEMPORARY FOR SAR
-  // bool lift_button = (msg->buttons.size() > 11 && msg->buttons[12]);
-  // if (lift_button && !prev_lift_button) {
-  //   lift_toggle = !lift_toggle;
-  // }
-  // prev_lift_button = lift_button;
-
   // Hardcoded values for top and bottom lift position
-  scoops_lift_front_vel  = msg->axes[1] * params_.velocity_limits_lift[stage_idx];
-  scoops_lift_back_vel = -msg->axes[1] * params_.velocity_limits_lift[stage_idx];
+  scoops_lift_front_vel  = msg->axes[1] * params_.velocity_limits_scoops_lift[stage_idx];
+  scoops_lift_back_vel = -msg->axes[1] * params_.velocity_limits_scoops_lift[stage_idx];
   // **
 
   // Sampler Lift
@@ -340,7 +327,7 @@ controller_interface::return_type ScienceManual::update(
   double scoop_spinner_cmd = scoop_axis * params_.velocity_limits_scoop_spinner[stage_idx] * (scoop_reverse ? -1.0 : 1.0);
 
   // Conveyor Belt L/R Right joystick
-  conveyor_belt_vel = msg->axes[2];
+  conveyor_belt_vel = params_.velocity_limits_conveyor_belt[stage_idx] * msg->axes[2];
 
   // Scoop Servo
   bool servo_scoop_f_button = (msg->buttons.size() > 1 && msg->buttons[3]);

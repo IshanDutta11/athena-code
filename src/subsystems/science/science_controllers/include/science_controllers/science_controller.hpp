@@ -112,9 +112,9 @@ protected:
   bool prev_pump_down_button_ = false;
 
   // Servos
-  bool servo_scoop_f_toggle = false;
+  bool servo_scoop_f_toggle = true;
   bool prev_servo_scoop_f_button_ = false;
-  bool servo_scoop_b_toggle = false;
+  bool servo_scoop_b_toggle = true;
   bool prev_servo_scoop_b_button_ = false;
 
   // Sampler
