@@ -31,7 +31,7 @@ science_manual:
     type: string_array
     default_value: ["velocity", "position"]
 
-  pump_a:
+  pump_right:
     type: string
     default_value: "stepper_motor_a"
     description: "First Stepper Motor"
@@ -39,7 +39,7 @@ science_manual:
     validation:
       not_empty<>: null
 
-  pump_b:
+  pump_left:
     type: string
     default_value: "stepper_motor_b"
     description: "Second Stepper Motor"
@@ -119,24 +119,13 @@ science_manual:
     validation:
       fixed_size<>: 4
 
+  # Scoops
   # Scoops Lift
   velocity_limits_scoops_lift:
     type: double_array
     default_value: [200.0, 0.1, 0.0, 0.3]
     validation:
       fixed_size<>: 4
-
-  # position_range_lift_feft:
-  #   type: double_array
-  #   default_value: [75.0, 235.0]
-  #   validation:
-  #     fixed_size<>: 2
-
-  # position_range_lift_bight:
-  #   type: double_array
-  #   default_value: [30.0, 235.0]
-  #   validation:
-  #     fixed_size<>: 2
 
   # Scoops  
   position_range_scoop_servo_f:
@@ -151,6 +140,7 @@ science_manual:
     validation:
       fixed_size<>: 2
 
+  # Scoops Spinner
   velocity_limits_scoop_spinner:
     type: double_array
     default_value: [30.0, 0.0, 0.6, 0.0]
@@ -158,29 +148,19 @@ science_manual:
       fixed_size<>: 4
 
   # Sampler
-  # position_range_sampler_lift:
-  #   type: double_array
-  #   default_value: [0.0, 360.0]
-  #   validation:
-  #     fixed_size<>: 2
-
+  # Sampler Lift
   velocity_limits_sampler_lift:
     type: double_array
     default_value: [200.0, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 
+  # Auger
   velocity_limits_auger:
     type: double_array
     default_value: [2.5, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
-
-  # velocity_limits_auger_lift:
-  #   type: double_array
-  #   default_value: [5.0, 0.0, 0.0, 0.6]
-  #   validation:
-  #     fixed_size<>: 4
 
   position_range_auger_lift:
     type: double_array

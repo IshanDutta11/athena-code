@@ -60,9 +60,10 @@
 
 /**/science_controller:
   ros__parameters:
+    # Joint names
     # Pumps
-    pump_a: "stepper_motor_a"
-    pump_b: "stepper_motor_b"
+    pump_right: "stepper_motor_a"
+    pump_left: "stepper_motor_b"
     
     # Scoops Lift
     scoops_lift_f: "servo_scoops_lift_f"
@@ -84,6 +85,17 @@
     interface_name: position 
     command_interfaces: [position, velocity]
     state_interfaces: [position, velocity]
+
+    # Joint limits
+    velocity_limits_pumps: [20.0, 0.0, 0.6, 0.0]
+    velocity_limits_scoops_lift: [200.0, 0.1, 0.0, 0.3]
+    position_range_scoop_servo_f: [20.0, 120.0]
+    position_range_scoop_servo_b: [0.0, 110.0]
+    velocity_limits_scoop_spinner: [30.0, 0.0, 0.6, 0.0]
+    velocity_limits_sampler_lift: [200.0, 0.0, 0.0, 0.6]
+    velocity_limits_auger: [2.5, 0.0, 0.0, 0.6]
+    position_range_auger_lift: [5.0, 360.0]
+    velocity_limits_conveyor_belt: [200.0, 0.0, 0.0, 0.6]
 
 # Laser GPIO Controller Configuration
 /**/laser_gpio_controller:

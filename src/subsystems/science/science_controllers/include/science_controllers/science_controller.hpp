@@ -106,8 +106,8 @@ protected:
 
   // Pumps
   int active_pump = 0; // 0 for pump a; 1 for pump b
-  int pump_a_toggle = 0;
-  int pump_b_toggle = 0;
+  int pump_right_toggle = 0;
+  int pump_left_toggle = 0;
   bool prev_pump_up_button_ = false;
   bool prev_pump_down_button_ = false;
 
@@ -127,8 +127,8 @@ protected:
 
   int servo_scoop_b_counter; // TESTING
 
-  std::string pump_a;
-  std::string pump_b;
+  std::string pump_right;
+  std::string pump_left;
   std::string scoops_lift_f;
   std::string scoops_lift_b;
   std::vector<std::string> scoop_servos;
@@ -189,8 +189,8 @@ private:
   {
     // ----- STEPPERS -----
     // --- Pump ---
-    IDX_PUMP_A_VELOCITY = 0,
-    IDX_PUMP_B_VELOCITY = 1,
+    IDX_PUMP_RIGHT_VELOCITY = 0,
+    IDX_PUMP_LEFT_VELOCITY = 1,
 
     // ----- SERVOS -----
     // --- Scoops Lift ---
