@@ -70,6 +70,8 @@ struct Axis {
     double pos_setpoint_ = 0.0f; // [rad]
     double vel_setpoint_ = 0.0f; // [rad/s]
     double torque_setpoint_ = 0.0f; // [Nm]
+    int32_t status_request_rate_ = 0; // [Hz]
+    int32_t maintenance_request_ = 0; // Not a rate, but a direct axis request
 
 
     // State (ODrives => ros2_control)
@@ -270,11 +272,15 @@ std::vector<hardware_interface::StateInterface> ODriveHardwareInterface::export_
             "motor_temperature", 
             &axes_[i].motor_temperature_
         ));
-
         state_interfaces.emplace_back(hardware_interface::StateInterface(
             info_.joints[i].name,
             "torque_current",
             &axes_[i].bus_current_
+        ));
+        state_interfaces.emplace_back(hardware_interface::StateInterface(
+            info_.joints[i].name,
+            "status",
+            &axes_[i].axis_error_
         ));
     }
 
@@ -299,6 +305,16 @@ std::vector<hardware_interface::CommandInterface> ODriveHardwareInterface::expor
             info_.joints[i].name,
             hardware_interface::HW_IF_POSITION,
             &axes_[i].pos_setpoint_
+        ));
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            info_.joints[i].name,
+            "status_request",
+            &axes_[i].status_request_rate_
+        ));
+        command_interfaces.emplace_back(hardware_interface::CommandInterface(
+            info_.joints[i].name,
+            "maintenance_request",
+            &axes_[i].maintenance_request_
         ));
     }
 

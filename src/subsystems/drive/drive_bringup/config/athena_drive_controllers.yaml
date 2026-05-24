@@ -161,6 +161,8 @@ motor_status_controller:
       - propulsion_fr_joint
       - propulsion_bl_joint
       - propulsion_br_joint
+      - steer_bl_joint
+      - steer_br_joint
     gpios:
       - drive_led
       - drive_power_module
