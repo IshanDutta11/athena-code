@@ -311,15 +311,11 @@ controller_interface::return_type ScienceManual::update(
   // Hardcoded values for top and bottom lift position
   scoops_lift_front_vel  = msg->axes[1] * params_.velocity_limits_scoops_lift[stage_idx];
   scoops_lift_back_vel = -msg->axes[1] * params_.velocity_limits_scoops_lift[stage_idx];
-  // **
 
   // Sampler Lift
-  // double sampler_lift_speed = params_.velocity_limits_sampler_lift[stage_idx];
   double axis_sampler_lift = (msg->axes.size() > 3) ? msg->axes[3] : 0.0;
   sampler_lift_front_vel = axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
   sampler_lift_back_vel = axis_sampler_lift * params_.velocity_limits_sampler_lift[stage_idx];
-  // sampler_lift_front_vel += sampler_lift_speed * axis_sampler_lift * dt;
-  // sampler_lift_back_vel -= sampler_lift_speed * axis_sampler_lift * dt;
 
   // Scoop Spinner (Right Trigger for Vel, Right Bumper for direction)
   double scoop_axis = (msg->axes.size() > 5) ? msg->axes[5] : 0.0;
@@ -350,12 +346,6 @@ controller_interface::return_type ScienceManual::update(
   double auger_spinner_cmd = auger_axis * params_.velocity_limits_auger[stage_idx] * (auger_reverse ? -1.0 : 1.0);
 
   // Auger_lift
-  // bool auger_lift_button = (msg->buttons.size() > 0 && msg->buttons[1]);
-  // if (auger_lift_button && !prev_auger_lift_button_) {
-  //   auger_lift_toggle = !auger_lift_toggle;
-  // }
-  // prev_auger_lift_button_ = auger_lift_button;
-  // auger_lift_pos = auger_lift_toggle ? params_.position_range_auger_lift[1] : params_.position_range_auger_lift[0];
   double auger_lift_axis = (msg->axes.size() > 0) ? msg->axes[0] : 0.0;
 
   // Use absolute value so direction doesn't matter
@@ -372,12 +362,8 @@ controller_interface::return_type ScienceManual::update(
   auger_lift_pos = max_pos - axis_mag * (max_pos - min_pos);
 
   // Clamp Positions
-  // scoops_lift_front_vel = std::clamp(scoops_lift_front_vel,  0.0, 360.0);
-  // scoops_lift_back_vel = std::clamp(scoops_lift_back_vel, 0.0, 360.0);
   scoop_servo_front_pos = std::clamp(scoop_servo_front_pos, params_.position_range_scoop_servo_f[0], params_.position_range_scoop_servo_f[1]);
   scoop_servo_back_pos = std::clamp(scoop_servo_back_pos, params_.position_range_scoop_servo_b[0], params_.position_range_scoop_servo_b[1]);
-  // sampler_lift_front_vel = std::clamp(sampler_lift_front_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
-  // sampler_lift_back_vel = std::clamp(sampler_lift_back_vel, params_.position_range_sampler_lift[0], params_.position_range_sampler_lift[1]);
   auger_lift_pos = std::clamp(auger_lift_pos, params_.position_range_auger_lift[0], params_.position_range_auger_lift[1]);
   
   // SET VALUES
