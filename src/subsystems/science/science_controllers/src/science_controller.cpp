@@ -141,7 +141,7 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
 
   // Reference subscriber
   ref_subscriber_ = get_node()->create_subscription<ControllerReferenceMsg>(
-    "/science/science_manual", subscribers_qos,
+    "science_manual", subscribers_qos,
     std::bind(&ScienceManual::reference_callback, this, std::placeholders::_1));
 
   std::shared_ptr<ControllerReferenceMsg> msg = std::make_shared<ControllerReferenceMsg>();
@@ -150,7 +150,7 @@ controller_interface::CallbackReturn ScienceManual::on_configure(
 
   // State publisher
   s_publisher_ = get_node()->create_publisher<ControllerStateMsg>(
-    "/science/science_manual/state", rclcpp::QoS(rclcpp::KeepLast(1)));
+    "science_manual/state", rclcpp::QoS(rclcpp::KeepLast(1)));
   state_publisher_ = std::make_unique<ControllerStatePublisher>(s_publisher_);
 
   if (state_publisher_ && state_publisher_->trylock()) {
