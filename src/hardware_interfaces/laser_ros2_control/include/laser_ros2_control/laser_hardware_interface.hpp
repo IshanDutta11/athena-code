@@ -2,7 +2,9 @@
 #define LASER_ROS2_CONTROL__LASER_HARDWARE_INTERFACE_HPP_
 
 #include <memory>
+#include <limits>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <cstdint>
 
@@ -57,29 +59,33 @@ public:
   void logger_function();
 
 private:
-  struct LaserJoint
+  struct LASERGPIO
   {
     std::string name;
     uint32_t can_id;
+    uint8_t node_id;
     double laser_state;
     double temperature;
     double is_connected;
     double status;
     double laser_command;
+    double prev_laser_command;
     double status_request;
     double prev_status_request;
     double elapsed_status_request_time;
+    std::vector<std::string> state_interface_names;
+    std::vector<std::string> command_interface_names;
+    std::unordered_map<std::string, std::string> parameters;
   };
 
   void on_can_message(const CANLib::CanFrame & frame);
   std::string can_interface_;
   uint32_t can_id_;         
-  uint8_t port_id_;          
 
   CANLib::SocketCanBus canBus_;
   CANLib::CanFrame can_tx_frame_;
   bool can_connected_;
-  std::vector<LaserJoint> LASERJoints_;
+  std::vector<LASERGPIO> LASERGPIOs_;
   int update_rate_;
   int logger_rate_;
   int logger_state_;

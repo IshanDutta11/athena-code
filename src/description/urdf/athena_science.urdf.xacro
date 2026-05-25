@@ -14,7 +14,7 @@
   <xacro:include filename="$(find description)/ros2_control/science/science.talon.ros2_control.xacro"/>
   <xacro:include filename="$(find description)/ros2_control/science/science.laser.ros2_control.xacro"/>
   <xacro:include filename="$(find description)/ros2_control/science/science.ccd.ros2_control.xacro"/>
-  <xacro:include filename="$(find description)/ros2_control/science/science.sensor_diode.ros2_control.xacro"/>
+  <xacro:include filename="$(find description)/ros2_control/science/science.photodiode.ros2_control.xacro"/>
   <xacro:include filename="$(find description)/ros2_control/science/science.led.ros2_control.xacro"/>
   <xacro:include filename="$(find description)/ros2_control/science/science.limit_switch.ros2_control.xacro"/>
   
@@ -49,8 +49,8 @@
     <!-- Import CCD ros2_control description (CAN-based) -->
     <xacro:ccd_ros2_control name="spectrometry_ccd" can_interface="$(arg can_interface)"/>
 
-    <!-- Import sensor diode ros2_control description (CAN-based) -->
-    <xacro:sensor_diode_ros2_control name="sensor_diode" can_interface="$(arg can_interface)"/>
+    <!-- Import photodiode ros2_control description (CAN-based) -->
+    <xacro:photodiode_ros2_control name="photodiode" can_interface="$(arg can_interface)"/>
 
     <!-- Import LED and limit switch ros2_control descriptions -->
     <xacro:science_led_ros2_control name="fluoro_led_hwi" can_interface="$(arg can_interface)"/>

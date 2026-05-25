@@ -69,7 +69,7 @@ def run_simulator(interface, port_id, pattern, fixed_value, delay):
     sock      = open_can_socket(interface)
     generator = IntensityGenerator(pattern, fixed_value)
 
-    print(f"[SIM] Sensor Diode Simulator")
+    print(f"[SIM] Photodiode Simulator")
     print(f"[SIM] Listening on CAN ID 0x{CAN_CMD_ID:03X}")
     print(f"[SIM] Responding on CAN ID 0x{CAN_RESP_ID:03X}")
     print(f"[SIM] Port ID: {port_id}")
@@ -127,7 +127,7 @@ def run_simulator(interface, port_id, pattern, fixed_value, delay):
         print("[SIM] CAN socket closed")
 
 def main():
-    parser = argparse.ArgumentParser(description="Sensor Diode CAN Bus Simulator")
+    parser = argparse.ArgumentParser(description="Photodiode CAN Bus Simulator")
     parser.add_argument("--interface", "-i", default="can0")
     parser.add_argument("--port", "-p", type=int, default=0)
     parser.add_argument("--pattern", choices=["fixed", "ramp", "sine", "noise", "gaussian"], default="sine")

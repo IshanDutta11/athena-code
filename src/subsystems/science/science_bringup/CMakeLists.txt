@@ -22,7 +22,7 @@ install(
 
 install(PROGRAMS
   scripts/ccd_can_simulator.py
-  scripts/sensor_diode_can_simulator.py
+  scripts/photodiode_can_simulator.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -32,4 +32,3 @@ endif()
 
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()
-

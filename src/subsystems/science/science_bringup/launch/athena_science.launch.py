@@ -236,7 +236,7 @@ def generate_launch_description():
 
     # GPIO controller spawner for Laser
 
-    gpio_controller_names = ["laser_gpio_controller", "fluoro_led_gpio_controller", "sensor_diode_gpio_controller"]
+    gpio_controller_names = ["laser_gpio_controller", "fluoro_led_gpio_controller", "photodiode_gpio_controller"]
 
     gpio_controller_spawners = []
     for controller in gpio_controller_names:
