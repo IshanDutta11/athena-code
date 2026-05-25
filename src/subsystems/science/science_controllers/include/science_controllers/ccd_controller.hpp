@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "science_controllers/ccd_controller_parameters.hpp"
 #include "controller_interface/controller_interface.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "realtime_tools/realtime_buffer.hpp"
@@ -33,14 +34,6 @@
 
 namespace science_controllers
 {
-
-// name constants for state interfaces
-static constexpr size_t STATE_MY_ITFS = 0;
-
-// name constants for command interfaces
-static constexpr size_t CMD_MY_ITFS = 0;
-
-
 
 class CCDSnapshotController : public controller_interface::ControllerInterface
 {
@@ -92,6 +85,9 @@ protected:
 
   std::vector<double> make_wavenumber_axis() const;
   std::vector<double> get_latest_intensities();
+
+  std::shared_ptr<ccd_controller::ParamListener> param_listener_;
+  ccd_controller::Params params_;
 
   std::string ccd_name_;
   std::vector<std::string> command_interface_names_;
@@ -147,8 +143,6 @@ private:
   enum CommandInterfaces
   {
     CMD_CAPTURE_BYTE = 0,
-
-    // Total number of interfaces
     CMD_ITFS_COUNT
   };
 

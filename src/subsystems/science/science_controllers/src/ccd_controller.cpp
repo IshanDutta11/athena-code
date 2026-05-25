@@ -20,93 +20,38 @@ CCDSnapshotController::CCDSnapshotController()
 controller_interface::CallbackReturn CCDSnapshotController::on_init()
 {
   try {
-    auto_declare<std::string>("ccd_name", "spectrometry_ccd");
-    auto_declare<std::vector<std::string>>("command_interfaces", {"capture_byte"});
-    auto_declare<std::vector<std::string>>(
-      "state_interfaces",
-      {
-        "is_connected",
-        "command_success",
-        "acquisition_in_progress",
-        "data_ready",
-        "frames_received",
-        "last_frame_id"
-      });
-
-    auto_declare<std::string>("snapshot_service_name", "~/request_snapshot");
-    auto_declare<std::string>("status_publish_topic", "~/status");
-    auto_declare<std::string>("snapshot_publish_topic", "/raman/raw_spectrum");
-
-    auto_declare<std::string>("spectrometer_id", "pda_spectrometer");
-    auto_declare<double>("integration_time_ms", 100.0);
-    auto_declare<double>("laser_wavelength_nm", 785.0);
-    auto_declare<int>("num_photodiodes", 3648);
-    auto_declare<double>("wavenumber_min", 200.0);
-    auto_declare<double>("wavenumber_max", 3500.0);
-
-    auto_declare<double>("publish_rate", 10.0);
-    auto_declare<double>("acquisition_timeout_sec", 5.0);
-    auto_declare<int>("expected_total_frames", 609);
+    param_listener_ = std::make_shared<ccd_controller::ParamListener>(get_node());
   } catch (const std::exception & e) {
-    fprintf(stderr, "Exception during CCDSnapshotController on_init: %s\n", e.what());
+    fprintf(stderr, "Exception thrown during controller init: %s \n", e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  snapshot_requested_ = false;
-  snapshot_in_progress_ = false;
-  snapshot_complete_published_ = false;
-
   return controller_interface::CallbackReturn::SUCCESS;
-}
-
-controller_interface::InterfaceConfiguration
-CCDSnapshotController::command_interface_configuration() const
-{
-  controller_interface::InterfaceConfiguration cfg;
-  cfg.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-
-  for (const auto & interface_name : command_interface_names_) {
-    cfg.names.push_back(ccd_name_ + "/" + interface_name);
-  }
-
-  return cfg;
-}
-
-controller_interface::InterfaceConfiguration
-CCDSnapshotController::state_interface_configuration() const
-{
-  controller_interface::InterfaceConfiguration cfg;
-  cfg.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-
-  for (const auto & interface_name : state_interface_names_) {
-    cfg.names.push_back(ccd_name_ + "/" + interface_name);
-  }
-
-  return cfg;
 }
 
 controller_interface::CallbackReturn CCDSnapshotController::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  ccd_name_ = get_node()->get_parameter("ccd_name").as_string();
-  command_interface_names_ = get_node()->get_parameter("command_interfaces").as_string_array();
-  state_interface_names_ = get_node()->get_parameter("state_interfaces").as_string_array();
+  params_ = param_listener_->get_params();
+  ccd_name_ = params_.ccd_name;
+  command_interface_names_ = params_.command_interfaces;
+  state_interface_names_ = params_.state_interfaces;
 
-  snapshot_service_name_ = get_node()->get_parameter("snapshot_service_name").as_string();
-  status_publish_topic_ = get_node()->get_parameter("status_publish_topic").as_string();
-  snapshot_publish_topic_ = get_node()->get_parameter("snapshot_publish_topic").as_string();
+  snapshot_service_name_ = params_.snapshot_service_name;
+  status_publish_topic_ = params_.status_publish_topic;
+  snapshot_publish_topic_ = params_.snapshot_publish_topic;
 
-  spectrometer_id_ = get_node()->get_parameter("spectrometer_id").as_string();
-  integration_time_ms_ = get_node()->get_parameter("integration_time_ms").as_double();
-  laser_wavelength_nm_ = get_node()->get_parameter("laser_wavelength_nm").as_double();
-  wavenumber_min_ = get_node()->get_parameter("wavenumber_min").as_double();
-  wavenumber_max_ = get_node()->get_parameter("wavenumber_max").as_double();
+  spectrometer_id_ = params_.spectrometer_id;
+  integration_time_ms_ = params_.integration_time_ms;
+  laser_wavelength_nm_ = params_.laser_wavelength_nm;
+  wavenumber_min_ = params_.wavenumber_min;
+  wavenumber_max_ = params_.wavenumber_max;
 
-  publish_rate_ = get_node()->get_parameter("publish_rate").as_double();
-  acquisition_timeout_sec_ = get_node()->get_parameter("acquisition_timeout_sec").as_double();
+  publish_rate_ = params_.publish_rate;
+  acquisition_timeout_sec_ = params_.acquisition_timeout_sec;
 
-  num_photodiodes_ = static_cast<int>(get_node()->get_parameter("num_photodiodes").as_int());
-  expected_total_frames_ = static_cast<int>(get_node()->get_parameter("expected_total_frames").as_int());
+  num_photodiodes_ = static_cast<int>(params_.num_photodiodes);
+  expected_total_frames_ = static_cast<int>(params_.expected_total_frames);
 
   if (command_interface_names_.size() != CMD_ITFS_COUNT) {
     RCLCPP_ERROR(
@@ -162,6 +107,32 @@ controller_interface::CallbackReturn CCDSnapshotController::on_configure(
     snapshot_publish_topic_.c_str());
 
   return controller_interface::CallbackReturn::SUCCESS;
+}
+
+controller_interface::InterfaceConfiguration
+CCDSnapshotController::command_interface_configuration() const
+{
+  controller_interface::InterfaceConfiguration cfg;
+  cfg.type = controller_interface::interface_configuration_type::INDIVIDUAL;
+
+  for (const auto & interface_name : command_interface_names_) {
+    cfg.names.push_back(ccd_name_ + "/" + interface_name);
+  }
+
+  return cfg;
+}
+
+controller_interface::InterfaceConfiguration
+CCDSnapshotController::state_interface_configuration() const
+{
+  controller_interface::InterfaceConfiguration cfg;
+  cfg.type = controller_interface::interface_configuration_type::INDIVIDUAL;
+
+  for (const auto & interface_name : state_interface_names_) {
+    cfg.names.push_back(ccd_name_ + "/" + interface_name);
+  }
+
+  return cfg;
 }
 
 controller_interface::CallbackReturn CCDSnapshotController::on_activate(
