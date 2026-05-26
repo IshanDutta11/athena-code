@@ -247,12 +247,17 @@ def generate_launch_description():
                 arguments=[
                     controller,
                     "-c", "/controller_manager",
-                    "--param-file", robot_controllers,  # ← add this
+                    "--param-file", robot_controllers,
                 ],
             )
         ]
 
-    inactive_robot_controller_names = ["joint_group_velocity_controller", "joint_group_position_controller"]
+    inactive_robot_controller_names = [
+        "joint_group_velocity_controller",
+        "joint_group_position_controller",
+        "conveyor_belt_velocity_controller",
+        "conveyor_belt_cls_controller",
+    ]
     inactive_robot_controller_spawners = [] # Set the ones you want inactive in the beginning (e.g., velocity controller, etc.)
     for controller in inactive_robot_controller_names:
         inactive_robot_controller_spawners += [
