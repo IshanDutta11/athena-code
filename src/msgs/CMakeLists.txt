@@ -20,11 +20,16 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/JointStatus.msg"
   "msg/SystemInfo.msg"
   "msg/Heading.msg"
-  "msg/LedStatus.msg"
+  "msg/WaypointEntry.msg"
+  "msg/WaypointManagerState.msg"
   "srv/SetController.srv"
+  "srv/AddWaypoint.srv"
+  "srv/ClearWaypoints.srv"
+  "msg/LedStatus.msg"
   "srv/StatusReq.srv"
   "srv/MaintenanceReq.srv"
   "action/NavigateToGPS.action"
+  "action/NavigateToWaypoint.action"
   DEPENDENCIES std_msgs geometry_msgs sensor_msgs builtin_interfaces action_msgs
 )
 
