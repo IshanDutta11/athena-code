@@ -105,13 +105,16 @@ protected:
   science_manual::Params params_;
 
   // Pumps
-  bool pump_toggle = false;
-  bool prev_pump_button_ = false;
+  int active_pump = 0; // 0 for pump a; 1 for pump b
+  int pump_right_toggle = 0;
+  int pump_left_toggle = 0;
+  bool prev_pump_up_button_ = false;
+  bool prev_pump_down_button_ = false;
 
   // Servos
-  bool servo_scoop_a_toggle = false;
-  bool prev_servo_scoop_a_button_ = false;
-  bool servo_scoop_b_toggle = false;
+  bool servo_scoop_f_toggle = true;
+  bool prev_servo_scoop_f_button_ = false;
+  bool servo_scoop_b_toggle = true;
   bool prev_servo_scoop_b_button_ = false;
 
   // Sampler
@@ -124,25 +127,25 @@ protected:
 
   int servo_scoop_b_counter; // TESTING
 
-  std::string pump_a;
-  std::string pump_b;
-  std::string lift_rack_and_pinion_l;
-  std::string lift_rack_and_pinion_r;
+  std::string pump_right;
+  std::string pump_left;
+  std::string scoops_lift_f;
+  std::string scoops_lift_b;
   std::vector<std::string> scoop_servos;
   std::string scoop_spinner;
-  std::string sampler_lift_l;
-  std::string sampler_lift_r;
+  std::string sampler_lift_f;
+  std::string sampler_lift_b;
+  std::string conveyor_belt;
   std::string auger_spinner;
   std::string auger_lift;
 
   std::vector<std::string> state_joints_;
   std::vector<std::string> stepper_pump_joints_;
-  std::vector<std::string> talon_joints_;
-  std::vector<std::string> servo_joints_;
-  std::vector<std::string> rack_pinion_joints_;
+  std::vector<std::string> scoops_lift_joints_;
   std::vector<std::string> dc_joints_;
+  std::vector<std::string> servo_joints_;
   std::vector<std::string> joints_;
-  //std::string talon_auger_;
+  //std::string dc_auger_;
 
   // Command subscribers and Controller State publisher
   rclcpp::Subscription<ControllerReferenceMsg>::SharedPtr ref_subscriber_ = nullptr;
@@ -166,69 +169,60 @@ private:
   control_mode_type current_mode_{control_mode_type::STAGE1};
   void load_velocity_limits();  // called in on_configure()
 
-  void send_commands(
-    double lift_cmd,
-    double stepper_cmd,
-    double scoop_cmd,
-    double auger_cmd,
-    double rack_left_cmd,
-    double rack_right_cmd
-    //double talon_auger_cmd
-    );
-  };
-
   static constexpr double max_lift_velocity = 1.0;
   static constexpr double max_stepper_velocity = 1.0;
   static constexpr double scoop_talon_velocity = 1.0;
   static constexpr double auger_velocity = 1.0;
   
-  double stepper_cmd = 0.0;
-  double scoop_servo_a_position = 0.0;
-  double scoop_servo_b_position = 0.0;
-  double auger_lift_position = 0.0;
-  double rack_left_position = 0.0;
-  double rack_right_position = 0.0;
-  double sampler_lift_pos_l = 0.0;
-  double sampler_lift_pos_r = 360.0;
+  double pump_right_cmd = 0.0;
+  double pump_left_cmd = 0.0;
+  double scoops_lift_front_vel = 0.0;
+  double scoops_lift_back_vel = 0.0;
+  double sampler_lift_front_vel = 0.0;
+  double sampler_lift_back_vel = 0.0;
+  double conveyor_belt_vel = 0.0;
+  double scoop_servo_front_pos = 0.0;
+  double scoop_servo_back_pos = 0.0;
+  double auger_lift_pos = 0.0;
 
   enum CommandInterfaces
   {
-    // ----- PUMPS -----
-    // --- Pump (position) ---
-    IDX_PUMP_A_VELOCITY = 0,
-    IDX_PUMP_B_VELOCITY = 1,
+    // ----- STEPPERS -----
+    // --- Pump ---
+    IDX_PUMP_RIGHT_VELOCITY = 0,
+    IDX_PUMP_LEFT_VELOCITY = 1,
 
+    // ----- SERVOS -----
+    // --- Scoops Lift ---
+    IDX_SCOOPS_LIFT_FRONT_VELOCITY  = 2,
+    IDX_SCOOPS_LIFT_BACK_VELOCITY = 3,
 
-    // ----- LIFT -----
-    // --- Rack and Pinion (position) ---
-    IDX_LEFT_LIFT_POSITION  = 2,
-    IDX_RIGHT_LIFT_POSITION = 3,
+    // --- Sampler Lift ----
+    IDX_SAMPLER_LIFT_FRONT_VELOCITY = 4,
+    IDX_SAMPLER_LIFT_BACK_VELOCITY = 5,
 
+    // --- Conveyor Belt ---
+    IDX_CONVEYOR_BELT_VELOCITY = 6,
 
-    // ----- SCOOPS -----
-    // --- Spinner (velocity) ---
-    IDX_SCOOP_SPINNER_VELOCITY = 4,
-
-    // --- Servos (position) ---
-    IDX_SCOOP_A_POSITION = 5,
-    IDX_SCOOP_B_POSITION = 6,
-
-
-    // ----- SAMPLER -----
-    // --- Lift (velocity) ----
-    IDX_SAMPLER_LIFT_LEFT_VELOCITY = 7,
-    IDX_SAMPLER_LIFT_RIGHT_VELOCITY = 8,
+    // --- Scoop Servos ---
+    IDX_SCOOP_FRONT_POSITION = 7,
+    IDX_SCOOP_BACK_POSITION = 8,
     
-    // ----- Auger (velocity) -----
-    IDX_AUGER_SPINNER_VELOCITY = 9,
+    // ----- Auger_lift (cap) -----
+    IDX_AUGER_LIFT_POSITION = 9,
 
-    // ----- Auger_lift (position) -----
-    IDX_AUGER_LIFT_POSITION = 10,
+
+    // ----- DC MOTORS -----
+    // --- Scoop Spinner ---
+    IDX_SCOOP_SPINNER_VELOCITY = 10,
+
+    // ----- Auger -----
+    IDX_AUGER_SPINNER_VELOCITY = 11,
     
     // Total number of interfaces
     CMD_ITFS_COUNT
   };
-
+};
   
 };
 // namespace science_controllers

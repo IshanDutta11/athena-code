@@ -57,7 +57,7 @@ class JoystickPublisher(Node):
         self.controller = None
         self.button_data = None
         self.hat_data = None
-        self.activation = 0.08
+        self.activation = 0.05
         self.joystick_index = None
 
         # Pygame Controller
@@ -89,7 +89,7 @@ class JoystickPublisher(Node):
             time.sleep(0.25)
             for event in pygame.event.get():
                 if event.type == pygame.JOYDEVICEADDED:
-                    print("Joystick connected.")
+                    self.get_logger().info("Joystick connected.")
                     pygame.joystick.init()            
                     joysticks = pygame.joystick.get_count()
                     break
@@ -118,13 +118,18 @@ class JoystickPublisher(Node):
             for i in range(self.controller.get_numhats()):
                 self.hat_data[i] = (0, 0)
 
-        self.previous_axes = np.zeros(6)
-        self.previous_buttons = np.zeros(13)        
+        self.axes_count = self.controller.get_numaxes()
+        self.button_count = self.controller.get_numbuttons()
+        self.hats_count = self.controller.get_numhats()
+        self.full_button_count = self.button_count + 4*self.hats_count # each hat has a tuple (x, y) which can be -1, 0, or 1
+
+        self.previous_axes = np.zeros(self.axes_count)
+        self.previous_buttons = np.zeros(self.full_button_count)        
 
     def controller_inputs(self):
        
-        joystick_vels = self.previous_axes
-        button_activations = self.previous_buttons
+        joystick_vels = np.zeros(self.axes_count)
+        button_activations = np.zeros(self.full_button_count)
         for event in pygame.event.get():
             if event.type == pygame.JOYAXISMOTION:
                 self.axis_data[event.axis] = round(event.value,2)
@@ -214,8 +219,8 @@ class JoystickPublisher(Node):
                     joystick_vels[5] = 0
                 
                 # Buttons
-                for i in range(13):
-                    button_activations[i] = self.button_data[i]
+                for i in range(self.button_count):
+                    button_activations[i] = self.button_data.get(i, False)
 
         elif(self.joystick_type == 1):    
 
@@ -290,8 +295,9 @@ class JoystickPublisher(Node):
                     joystick_vels[3] = 0
                 
                 # Buttons
-                for i in range(13):
-                    button_activations[i] = self.button_data[i]
+                for i in range(self.button_count):
+                    button_activations[i] = self.button_data.get(i, False)
+
         elif(self.joystick_type == 2 or self.joystick_type == 3):
 
                 """
@@ -313,8 +319,13 @@ class JoystickPublisher(Node):
                 [5] = right bumper
                 [6] = TV
                 [7] = Menu
-                [8] = left joystick button
-                [9] = right joystick button
+                [8] = X button
+                [9] = left joystick button
+                [10] = right joystick button
+                [11] = Right D-pad
+                [12] = Left D-pad
+                [13] = Up D-pad
+                [14] = Down D-pad
                 """
 
                 # Left stick: left and right
@@ -364,10 +375,23 @@ class JoystickPublisher(Node):
                     joystick_vels[5] = 0
                 
                 # Buttons
-                for i in range(min(10, len(button_activations))):
+                for i in range(self.button_count):
                     button_activations[i] = self.button_data.get(i, False)
+
+                
+                # Hats
+                hat_x, hat_y = self.controller.get_hat(0)
+                button_activations[11] = (hat_x == 1)
+                button_activations[12] = (hat_x == -1)
+
+                button_activations[13] = (hat_y == 1)
+                button_activations[14] = (hat_y == -1)
+
+                # self.get_logger().info(f"hat_x: {hat_x} hat_y: {hat_y}")
+                # self.get_logger().info(f"Button count: {self.button_count} Full count: {self.full_button_count}")
+                # self.get_logger().info(f"button_activations: {button_activations}")
         else:
-            print('calibrate:', pprint.pprint(self.axis_data))
+            self.get_logger().info('calibrate:')
 
         # Save current numpy array for joystick and buttons
         self.previous_axes = joystick_vels

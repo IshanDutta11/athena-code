@@ -28,7 +28,7 @@ science_manual:
     type: string_array
     default_value: ["velocity", "position"]
 
-  pump_a:
+  pump_right:
     type: string
     default_value: "stepper_motor_a"
     description: "First Stepper Motor"
@@ -36,7 +36,7 @@ science_manual:
     validation:
       not_empty<>: null
 
-  pump_b:
+  pump_left:
     type: string
     default_value: "stepper_motor_b"
     description: "Second Stepper Motor"
@@ -44,25 +44,43 @@ science_manual:
     validation:
       not_empty<>: null
 
-  lift_rack_and_pinion_l:
+  scoops_lift_f:
     type: string
-    default_value: "servo_rack_and_pinion_l"
+    default_value: "servo_scoops_lift_f"
     description: "The Servo motor controller for the left-sided rack and pinion"
     read_only: true
     validation:
       not_empty<>: null
 
-  lift_rack_and_pinion_r:
+  scoops_lift_b:
     type: string
-    default_value: "servo_rack_and_pinion_r"
+    default_value: "servo_scoops_lift_b"
     description: "The Servo motor controller for the right-sided rack and pinion"
     read_only: true
     validation:
       not_empty<>: null
 
+  sampler_lift_f:
+    type: string
+    default_value: "servo_sampler_lift_f"
+    description: "(Optional)"
+    read_only: false
+
+  sampler_lift_b:
+    type: string
+    default_value: "servo_sampler_lift_b"
+    description: "(Optional)"
+    read_only: false
+
+  conveyor_belt:
+    type: string
+    default_value: "servo_conveyor_belt"
+    description: "(Optional)"
+    read_only: false
+  
   scoop_servos:
     type: string_array
-    default_value: ["servo_scoop_a", "servo_scoop_b"]
+    default_value: ["servo_scoop_f", "servo_scoop_b"]
     description: "The servos for the scoop (2 servos)"
     read_only: true
     validation:
@@ -76,18 +94,6 @@ science_manual:
     read_only: true
     validation:
       not_empty<>: null
-
-  sampler_lift_l:
-    type: string
-    default_value: "servo_sampler_lift_l"
-    description: "(Optional)"
-    read_only: false
-
-  sampler_lift_r:
-    type: string
-    default_value: "servo_sampler_lift_r"
-    description: "(Optional)"
-    read_only: false
 
   auger_spinner:
     type: string
@@ -110,60 +116,46 @@ science_manual:
     validation:
       fixed_size<>: 4
 
-  # Lift
-  velocity_limits_lift:
+  # Scoops
+  # Scoops Lift
+  velocity_limits_scoops_lift:
     type: double_array
-    default_value: [20.0, 0.1, 0.0, 0.3]
+    default_value: [200.0, 0.1, 0.0, 0.3]
     validation:
       fixed_size<>: 4
 
-  position_range_lift_left:
+  # Scoops  
+  position_range_scoop_servo_f:
     type: double_array
-    default_value: [75.0, 235.0]
+    default_value: [20.0, 120.0]
     validation:
       fixed_size<>: 2
 
-  position_range_lift_right:
+  position_range_scoop_servo_b:
     type: double_array
-    default_value: [30.0, 235.0]
+    default_value: [0.0, 110.0]
     validation:
       fixed_size<>: 2
 
-  # Scoops
-  position_range_scoop_servo:
-    type: double_array
-    default_value: [0.0, 120.0]
-    validation:
-      fixed_size<>: 2
-
+  # Scoops Spinner
   velocity_limits_scoop_spinner:
     type: double_array
-    default_value: [15.0, 0.0, 0.6, 0.0]
+    default_value: [30.0, 0.0, 0.6, 0.0]
     validation:
       fixed_size<>: 4
 
   # Sampler
-  position_range_sampler_lift:
-    type: double_array
-    default_value: [0.0, 360.0]
-    validation:
-      fixed_size<>: 2
-
+  # Sampler Lift
   velocity_limits_sampler_lift:
     type: double_array
-    default_value: [50.0, 0.0, 0.0, 0.6]
+    default_value: [200.0, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 
+  # Auger
   velocity_limits_auger:
     type: double_array
-    default_value: [5.0, 0.0, 0.0, 0.6]
-    validation:
-      fixed_size<>: 4
-
-  velocity_limits_auger_lift:
-    type: double_array
-    default_value: [10.0, 0.0, 0.0, 0.6]
+    default_value: [2.5, 0.0, 0.0, 0.6]
     validation:
       fixed_size<>: 4
 
@@ -172,3 +164,10 @@ science_manual:
     default_value: [5.0, 360.0]
     validation:
       fixed_size<>: 2
+
+  # Conveyor Belt
+  velocity_limits_conveyor_belt:
+    type: double_array
+    default_value: [200.0, 0.0, 0.0, 0.6]
+    validation:
+      fixed_size<>: 4
