@@ -114,7 +114,7 @@
     position_range_auger_lift: [5.0, 360.0]
     velocity_limits_conveyor_belt: [200.0, 0.0, 0.0, 0.6]
 
-ccd_controller:
+/**/ccd_controller:
   ros__parameters:
     ccd_name: "spectrometry_ccd"
     command_interfaces: ["capture_byte"]
@@ -134,7 +134,7 @@ ccd_controller:
     acquisition_timeout_sec: 5.0
     expected_total_frames: 609
 
-conveyor_belt_cls_controller:
+/**/conveyor_belt_cls_controller:
   ros__parameters:
     conveyor_belt_joint: "servo_conveyor_belt"
     rotary_encoder_joint: "conveyor_belt_encoder"

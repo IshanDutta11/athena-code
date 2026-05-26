@@ -238,22 +238,35 @@ controller_interface::CallbackReturn ScienceManual::on_activate(
       get_node()->get_logger(),
       "ScienceManual: expected %d command interfaces, got %zu",
       CMD_ITFS_COUNT, command_interfaces_.size());
+
+    RCLCPP_ERROR(
+    get_node()->get_logger(),
+    "ScienceManual received command interfaces:");
+
+  for (const auto & interface : command_interfaces_)
+  {
+    RCLCPP_ERROR(
+      get_node()->get_logger(),
+      "  %s/%s",
+      interface.get_prefix_name().c_str(),
+      interface.get_interface_name().c_str());
+  }
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
 }
-
+  
 controller_interface::CallbackReturn ScienceManual::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   for (size_t i = 0; i < command_interfaces_.size(); ++i) {
     command_interfaces_[i].set_value(std::numeric_limits<double>::quiet_NaN());
   }
-  stepper_pump_joints_.clear();
-  dc_joints_.clear();
-  servo_joints_.clear();
-  scoops_lift_joints_.clear();
-  state_joints_.clear();
+  // stepper_pump_joints_.clear();
+  // dc_joints_.clear();
+  // servo_joints_.clear();
+  // scoops_lift_joints_.clear();
+  // state_joints_.clear();
 
   RCLCPP_INFO(get_node()->get_logger(), "Manual controller deactivated and released interfaces");
   return controller_interface::CallbackReturn::SUCCESS;
