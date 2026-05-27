@@ -250,26 +250,16 @@ def launch_setup(context, *args, **kwargs):
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    motor_status_broadcaster_spawner = Node(
+    motor_status_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-<<<<<<< HEAD
-        arguments=["motor_status_broadcaster", "-c", "/controller_manager"],
-=======
-        arguments=["zed_servo_controller", "-c", "/controller_manager"],
+        arguments=["motor_status_controller", "-c", "/controller_manager"],
     )
 
     zed_servo_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["zed_servo_contoller", "-c", "/controller_manager"],
->>>>>>> e6025d0 (Drive Changes)
-    )
-
-    zed_servo_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["zed_servo_controller", "-c", "/controller_manager"],
     )
 
     robot_controller_names = [robot_controller]

@@ -42,7 +42,7 @@
                 <state_interface name="velocity"/>
             </joint>
 
-            <joint name="talon_scoop">
+            <joint name="dc_scoop">
                 <param name="node_id">2</param>
                 <command_interface name="position">
                 <param name="min">0</param>

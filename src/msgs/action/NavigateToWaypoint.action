@@ -1,0 +1,7 @@
+uint32 waypoint_id
+---
+bool success
+string message
+---
+string status
+float32 distance_remaining
