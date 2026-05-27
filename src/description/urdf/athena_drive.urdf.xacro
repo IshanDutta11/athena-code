@@ -89,7 +89,7 @@
     <xacro:power_module_ros2_control name="drive_power_module" can_interface="$(arg can_interface)"/>
 
     <!-- Servo control for Zed camera -->
-    <xacro:servo_ros2_control name="zed_servo_control"/>
+    <xacro:servo_ros2_control name="zed_servo_control" can_interface="$(arg can_interface)"/>
   </xacro:unless>
 
   

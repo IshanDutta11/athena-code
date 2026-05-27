@@ -7,33 +7,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_runtime REQUIRED)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/SetController.srv"
-  "srv/TakePanorama.srv"
-  DEPENDENCIES builtin_interfaces
-)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/SetController.srv"
-  "srv/TakePanorama.srv"
-  DEPENDENCIES builtin_interfaces
-)
-
+find_package(msgs REQUIRED)
 
 install(
   DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME}
 )
 install(PROGRAMS
-<<<<<<< HEAD
   scripts/zed_servo_node.py
-=======
-  scripts/zed_arduino_node.py
->>>>>>> e6025d0 (Drive Changes)
   DESTINATION lib/${PROJECT_NAME}
 )
 install(PROGRAMS
@@ -45,6 +27,6 @@ install(PROGRAMS
 if(BUILD_TESTING)
 endif()
 
-ament_export_dependencies(rosidl_default_runtime)
+# ament_export_dependencies(rosidl_default_runtime)
 ament_package()
 

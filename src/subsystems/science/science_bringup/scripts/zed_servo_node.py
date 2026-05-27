@@ -2,7 +2,8 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String,Int32, Float64MultiArray,Float32
-from science_bringup.srv import TakePanorama
+from msgs.srv import TakePanorama
+from msgs.msg import Heading
 import pyzed.sl as sl
 import cv2 as cv
 import math
@@ -10,23 +11,19 @@ import numpy as np
 from pathlib import Path
 import time
 import os
-#To run the following node: 
-#ros2 run drive_bringup zed_servo_node.py (I kinda forgot where the node was supposed to be)
-#ros2 run science_bringup zed_servo_node.py
-#
-#Panorama Service sits in science
-#ros2 service call /take_panorama science_bringup/TakePanorama     "{take_panorama: True, frames: 31, max_angle: 270.0}"
 
-#I think I was implied to make this but I never made this
-#Zed Servo rotate left/right
-#ros2 service call /servo_turn science_bringup/Servo_Turn          "data:[]" (degree to turn to)/270
+"""
+To run the following node: 
+ros2 run science_bringup zed_servo_node.py
 
-#Mulitple nodes within the same porgram...
+Panorama Service sits in science
+ros2 service call /take_panorama science_bringup/TakePanorama     "{take_panorama: True, frames: 31, max_angle: 270.0}"
+"""
 
 cam_dir = [sl.VIEW.LEFT,sl.VIEW.SIDE_BY_SIDE,sl.VIEW.RIGHT]
 SUCCESS_CODE = sl.ERROR_CODE.SUCCESS
 
-#MAT object to CV2 object
+# MAT object to CV2 object
 def slMat2cvMat(sl_mat:sl.Mat) -> cv.Mat:
    return cv.cvtColor(crop_black_borders(sl_mat.get_data()),cv.COLOR_BGRA2BGR)
 def crop_black_borders(image):
@@ -42,7 +39,7 @@ class Zed_Servo_Node(Node):
     def __init__(self):
         #Ros2 service call
         super().__init__(node_name="zed_servo_node")
-        #Node needs to be turned on/off
+        # Node needs to be turned on/off
         # Then in your camera init:
 
         self.init_param = sl.InitParameters()
@@ -64,26 +61,26 @@ class Zed_Servo_Node(Node):
             'zed_servo_publisher',
             10
         )
-        #Make this a service
-        #frames to take
-        #take_panorama.srv
+        # Make this a service
+        # frames to take
+        # take_panorama.srv
         # take_panorama = take pictures or not 
         # max_angle = angle to turn to,
         # frames = Frames to capture 
         
         #creates the GPS Subscription here
         
-        ##Subscribe to the heading
-        ##heading_topic
-        self.subscription = self.create_subscription(#can you check if the subscription is correct? 
-            String,
-            "sensor_msgs/msg/NavSatFix",
+        ## Subscribe to the heading
+        ## heading_topic
+        self.subscription = self.create_subscription(
+            Heading,
+            "heading",
             self.set_header,
             10
         )
 
         #########Initializes all Camera Parameters##############
-        self.init_param.camera_resolution=sl.RESOLUTION.HD2K#Test with 1080|2K #We have to use 720, because images aren't wide enough
+        self.init_param.camera_resolution=sl.RESOLUTION.HD2K #Test with 1080|2K #We have to use 720, because images aren't wide enough
         self.init_param.camera_fps = 15
         
         # # Refer here: https://www.stereolabs.com/docs/positional-tracking/coordinate-frames
@@ -188,7 +185,7 @@ class Zed_Servo_Node(Node):
     def set_header(self, msg):
         self.get_logger().info(f"Received: {msg.data}")
     
-    #Helper Method to sstitch photos together
+    # Helper Method to stitch photos together
     def stitch_photos(self,dir_path="pano_photos",out_image_name="panoramic_image"):
         # Read the images from this path
         folder_path = Path(dir_path)
@@ -214,9 +211,7 @@ class Zed_Servo_Node(Node):
         else:
             self.get_logger().info("Stitching failed with status code:", status)
     
-def main(args=None):
-    #Checks if Cython is being run
-    
+def main(args=None):  
     rclpy.init(args=args) # Initializes the ros2 communication
     node = Zed_Servo_Node()
     rclpy.spin(node=node) # Node spin = Keep this Node alive until we kill it

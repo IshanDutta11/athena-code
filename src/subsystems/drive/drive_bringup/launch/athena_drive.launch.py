@@ -259,7 +259,7 @@ def launch_setup(context, *args, **kwargs):
     zed_servo_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["zed_servo_contoller", "-c", "/controller_manager"],
+        arguments=["zed_servo_controller", "-c", "/controller_manager"],
     )
 
     robot_controller_names = [robot_controller]
