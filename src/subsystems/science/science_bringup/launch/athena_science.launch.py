@@ -46,6 +46,7 @@ def generate_launch_description():
             description="YAML file with the controllers configuration.",
         )
     )
+    
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
@@ -222,7 +223,7 @@ def generate_launch_description():
     )'''
 
     # Active Spawners
-    robot_controller_names = ["science_controller"] # robot_controller
+    robot_controller_names = ["science_controller", "ccd_controller"] # robot_controller
     robot_controller_spawners = [] 
     for controller in robot_controller_names:
         robot_controller_spawners += [
@@ -234,18 +235,29 @@ def generate_launch_description():
         ]
 
     # GPIO controller spawner for Laser
-    gpio_controller_names = ["laser_gpio_controller", "fluoro_led_gpio_controller"]
+
+    gpio_controller_names = ["laser_gpio_controller", "fluoro_led_gpio_controller", "photodiode_gpio_controller"]
+
     gpio_controller_spawners = []
     for controller in gpio_controller_names:
         gpio_controller_spawners += [
             Node(
                 package="controller_manager",
                 executable="spawner",
-                arguments=[controller, "-c", "/controller_manager"],
+                arguments=[
+                    controller,
+                    "-c", "/controller_manager",
+                    "--param-file", robot_controllers,
+                ],
             )
         ]
 
-    inactive_robot_controller_names = ["joint_group_velocity_controller", "joint_group_position_controller"]
+    inactive_robot_controller_names = [
+        "joint_group_velocity_controller",
+        "joint_group_position_controller",
+        "conveyor_belt_velocity_controller",
+        "conveyor_belt_cls_controller",
+    ]
     inactive_robot_controller_spawners = [] # Set the ones you want inactive in the beginning (e.g., velocity controller, etc.)
     for controller in inactive_robot_controller_names:
         inactive_robot_controller_spawners += [

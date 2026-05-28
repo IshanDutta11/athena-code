@@ -22,6 +22,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Heading.msg"
   "msg/WaypointEntry.msg"
   "msg/WaypointManagerState.msg"
+  "msg/RamanSpectrum.msg"
+  "msg/LedStatus.msg"
   "srv/SetController.srv"
   "srv/AddWaypoint.srv"
   "srv/ClearWaypoints.srv"

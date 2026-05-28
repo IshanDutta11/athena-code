@@ -20,10 +20,15 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(PROGRAMS
+  scripts/ccd_can_simulator.py
+  scripts/photodiode_can_simulator.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 
 if(BUILD_TESTING)
 endif()
 
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()
-
