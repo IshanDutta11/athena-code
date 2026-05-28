@@ -7,17 +7,20 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-
 find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_runtime REQUIRED)
-
+find_package(msgs REQUIRED)
 
 install(
   DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME}
+)
+install(PROGRAMS
+  scripts/zed_servo_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS
+  scripts/zed_arduino_node.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(PROGRAMS
@@ -30,5 +33,5 @@ install(PROGRAMS
 if(BUILD_TESTING)
 endif()
 
-ament_export_dependencies(rosidl_default_runtime)
+# ament_export_dependencies(rosidl_default_runtime)
 ament_package()

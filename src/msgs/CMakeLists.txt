@@ -18,6 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CANB.msg"
   "msg/Currentdraw.msg"
   "msg/JointStatus.msg"
+  "msg/LedStatus.msg"
   "msg/SystemInfo.msg"
   "msg/Heading.msg"
   "msg/WaypointEntry.msg"
@@ -27,9 +28,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SetController.srv"
   "srv/AddWaypoint.srv"
   "srv/ClearWaypoints.srv"
-  "msg/LedStatus.msg"
   "srv/StatusReq.srv"
   "srv/MaintenanceReq.srv"
+  "srv/TakePanorama.srv"
   "action/NavigateToGPS.action"
   "action/NavigateToWaypoint.action"
   DEPENDENCIES std_msgs geometry_msgs sensor_msgs builtin_interfaces action_msgs
