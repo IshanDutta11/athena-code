@@ -35,7 +35,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'yolo_node = yolo_ros_bt.yolo_ros_node:main',
+            'yolo_ros_node = yolo_ros_bt.yolo_ros_node:main',
         ],
     },
 )

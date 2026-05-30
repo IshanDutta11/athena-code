@@ -12,10 +12,19 @@
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>xacro</exec_depend>
   <exec_depend>description</exec_depend>
-  <exec_depend>athena_planner</exec_depend>
-  <exec_depend>localizer</exec_depend>
   <exec_depend>athena_sensors</exec_depend>
   <exec_depend>athena_gps</exec_depend>
+  <exec_depend>gps_pose_publisher</exec_depend>
+  <exec_depend>athena_map</exec_depend>
+  <exec_depend>global_planner</exec_depend>
+  <exec_depend>vector_field_planner</exec_depend>
+  <exec_depend>mission_executive</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>mag_heading</exec_depend>
+  <exec_depend>yolo_ros_bt</exec_depend>
+  <exec_depend>aruco_bt</exec_depend>
+  <exec_depend>led_indicator</exec_depend>
+  <exec_depend>point_cloud_filterer</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
