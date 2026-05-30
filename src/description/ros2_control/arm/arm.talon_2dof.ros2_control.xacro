@@ -21,7 +21,7 @@
         <param name="joint_type">revolute</param>
         <!-- Motor config (Pololu 37D defaults) -->
         <param name="encoder_resolution">64.0</param>
-        <param name="gear_ratio">102.08</param>
+        <param name="gear_ratio">4002.08</param>
         <param name="inverted">true</param>
         <param name="sensor_phase">true</param>
         <param name="kP">0.25</param>
