@@ -250,6 +250,9 @@
       - limit_switch_3
       - limit_switch_4
     command_interfaces:
+      wrist_pitch:
+        interfaces:
+          - status_request
       gripper_claw:
         interfaces:
           - status_request
