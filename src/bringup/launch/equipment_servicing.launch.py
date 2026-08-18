@@ -94,7 +94,7 @@ def launch_setup(context, *args, **kwargs):
     # Arm: inlined, namespaced under /arm so its CM/topics don't clash with drive.
     # The arm subsystem files (URDF, controllers YAML, joystick YAML) are reused as-is.
     # ------------------------------------------------------------------
-    arm_urdf_xacro = os.path.join(description_share, 'urdf', 'athena_arm.urdf.xacro')
+    arm_urdf_xacro = os.path.join(description_share, 'urdf', 'arm', 'athena_arm.urdf.xacro')
     arm_controllers_yaml = os.path.join(arm_bringup_share, 'config', 'athena_arm_controllers.yaml')
     arm_joystick_yaml = os.path.join(arm_bringup_share, 'config', 'joystick.yaml')
 

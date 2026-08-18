@@ -32,7 +32,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
-            default_value="athena_arm.urdf.xacro",
+            default_value="arm/athena_arm.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -91,7 +91,7 @@ def generate_launch_description():
     
     # -- Building Path Files --
     robot_description_path = PathJoinSubstitution(
-        [FindPackageShare("description"), "urdf", "athena_arm.urdf.xacro"]
+        [FindPackageShare(description_package), "urdf", LaunchConfiguration("description_file")]
     )
     robot_controllers = PathJoinSubstitution(
         [FindPackageShare(runtime_config_package), "config", controllers_file]
