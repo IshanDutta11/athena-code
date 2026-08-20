@@ -39,7 +39,7 @@ docker images
 docker ps
 ```
 
-4. Quick hardware test (joystick controller):
+*Quick hardware test (joystick controller):*
 
 ```bash
 sudo evtest
