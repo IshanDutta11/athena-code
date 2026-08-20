@@ -71,27 +71,9 @@ _Deactivates ODrives:_
 ros2 launch drive_bringup athena_drive.launch.py deactivate_odrive:=true
 ```
 
-#### Robot Controller
+#### General Controls
 
 ![Alt text](../../../docs/drive_controls_rear_ackermann.png)
-
-_Rear Ackermann Controller:_
-
-```bash
-ros2 launch drive_bringup athena_drive.launch.py robot_controller:=rear_ackermann_controller
-```
-
-_Front Ackermann Controller:_
-
-```bash
-ros2 launch drive_bringup athena_drive.launch.py robot_controller:=front_ackermann_controller
-```
-
-_Ackermann Steering Controller:_
-
-```bash
-ros2 launch drive_bringup athena_drive.launch.py robot_controller:=ackermann_steering_controller
-```
 
 #### CAN Interface
 
@@ -100,7 +82,7 @@ The Jetson currently uses a CANable to implement CAN, not its own CAN controller
 _CAN Interface:_
 
 ```bash
-ros2 launch drive_bringup athena_drive.launch.py can_interface:=can0
+ros2 launch drive_bringup athena_drive.launch.py can_interface:=can1
 ```
 
 ### Testing

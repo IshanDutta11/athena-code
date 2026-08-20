@@ -39,19 +39,23 @@ Additionally, the user can make `maintenance requests` as well. These are intend
 
 `request_rate`:
 
-`-1`: once
+```
 
-`0`: stop
+-1: once
 
-`> 0`: send command at request_rate Hz
+0: stop
+
+> 0: send command at request_rate Hz
+```
 
 `data`:  CAN Frame data
+```
+i32_data: 32-bit data
 
-`i32_data`: 32-bit data
+i16_data: 16-bit data
 
-`i16_data`: 16-bit data
-
-`u8_data`: 8-bit data
+u8_data: 8-bit data
+```
 
 For these fields specifically, the user must be familiar with the CAN protocol for the specific piece of hardware. As long as the data inserted (like multiple different 8 bit data fields) are kept in order, the hardware interface will sort out the proper order for the frame as well as do the endianess and hex conversions.
 

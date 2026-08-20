@@ -117,8 +117,6 @@ ros2 launch arm_bringup athena_arm.launch.py can_interface:=can1
 
 ##### ROS2 Controller: End Effector - Gripper Claw - Joint by Joint
 
-,
-
 ```bash
 source install/setup.bash
 ros2 service call /set_controller msgs/srv/SetController "{
@@ -133,8 +131,11 @@ ros2 service call /set_controller msgs/srv/SetController "{
 ##### ROS2 Controller: Cylindrical (Work in Progress)
 
 **Concept Demo:**
+
 ![Alt text](../../../docs/cylindrical_controller.gif)
 
+
+**Controls:**
 ![Alt text](../../../docs/arm_controls_cylindrical.png)
 
 ```bash

@@ -39,7 +39,7 @@ docker images
 docker ps
 ```
 
-*Quick hardware test (joystick controller):*
+*Quick hardware test (joystick controlgit ler):*
 
 ```bash
 sudo evtest
@@ -225,7 +225,9 @@ Afterwards, add the following limits to the realtime group in `/etc/security/lim
 ## Future Work
 
 - Test docker setup and documentation branch changes on actual rover.
+- Add navigation readme.
 - Modify `.devcontainer/jetson/Dockerfile` for the Jetson platform and its hardware-specific dependencies.
 - Modify `.devcontainer/base_station/Dockerfile` for the base-station machine and its runtime requirements.
 - Validate both images on their target machines so they can replace the shared developer setup.
 - Test Docker hardware access with a CANable adapter when one is available.
+- Fix joystick publisher.
