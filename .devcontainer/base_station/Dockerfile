@@ -5,6 +5,7 @@ ARG ROS_DISTRO=humble
 ARG USERNAME=loop_dev
 ARG USER_UID=1000
 ARG USER_GID=${USER_UID}
+ARG MACHINE_TYPE=developer
 
 ENV ROS_DISTRO=${ROS_DISTRO}
 ENV LANG=en_US.UTF-8
@@ -33,8 +34,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash-completion \
     build-essential \
+    can-utils \
     clang-format \
     cmake \
+    evtest \
     geographiclib-tools \
     git \
     git-lfs \

@@ -1,14 +1,17 @@
 {
-  "name": "Athena ROS 2 Humble",
+  "name": "Athena ROS 2 Humble (Jetson)",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "../..",
+    "args": {
+      "MACHINE_TYPE": "jetson"
+    }
   },
   "remoteUser": "loop_dev",
   "updateRemoteUserUID": true,
   "workspaceFolder": "/athena-code",
   "workspaceMount": "source=${localWorkspaceFolder},target=/athena-code,type=bind,consistency=cached",
-  "postCreateCommand": ".devcontainer/post_create.sh",
+  "postCreateCommand": ".devcontainer/jetson/post_create.sh",
   "runArgs": [
     "--network=host",
     "--ipc=host",
@@ -16,7 +19,8 @@
   ],
   "containerEnv": {
     "ROS_DISTRO": "humble",
-    "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp"
+    "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp",
+    "ATHENA_MACHINE_TYPE": "jetson"
   },
   "customizations": {
     "vscode": {
@@ -27,7 +31,7 @@
         "ms-iot.vscode-ros",
         "openai.chatgpt",
         "cweijan.vscode-office",
-        "esbenp.prettier-vscode",
+        "esben.prettier-vscode",
         "redhat.vscode-xml",
         "tamasfe.even-better-toml"
       ]
