@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-
   <xacro:macro name="odrive_ros2_control" params="name deactivate_odrive steering_config:=rear can_interface:=can0">
-
     <ros2_control name="${name}" type="system">
       <hardware>
         <param name="deactivate_odrive">${deactivate_odrive}</param>
@@ -77,9 +75,6 @@
           <!-- <state_interface name="status"/> -->
         </joint>
       </xacro:if>
-
     </ros2_control>
-
   </xacro:macro>
-
 </robot>

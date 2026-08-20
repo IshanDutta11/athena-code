@@ -2,7 +2,7 @@ from launch import LaunchDescription
 from launch.actions import RegisterEventHandler, DeclareLaunchArgument, TimerAction, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration, PythonExpression
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -47,8 +47,8 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "controllers_file",
-            default_value="athena_arm_controllers.yaml",
-            description="YAML file with the controllers configuration.",
+            default_value="",
+            description="Optional controller YAML override. The wrist-specific configuration is selected by default.",
         )
     )
     declared_arguments.append(
@@ -144,6 +144,7 @@ def launch_setup(context, *args, **kwargs):
     using_mock_hardware = use_mock_hardware.perform(context).lower() in ("true", "1", "yes")
     mock_sensor_commands = LaunchConfiguration("mock_sensor_commands")
     use_3dof = LaunchConfiguration("use_3dof")
+    using_3dof = use_3dof.perform(context).lower() in ("true", "1", "yes")
     deactivate_talon = LaunchConfiguration("deactivate_talon")
     can_interface = LaunchConfiguration("can_interface")
     
@@ -154,16 +155,25 @@ def launch_setup(context, *args, **kwargs):
     robot_description_path = PathJoinSubstitution(
         [FindPackageShare(description_package), "urdf", description_file]
     )
+    controllers_file_name = controllers_file.perform(context)
+    if not controllers_file_name:
+        controllers_file_name = (
+            "athena_arm_controllers_3dof.yaml"
+            if using_3dof
+            else "athena_arm_controllers_2dof.yaml"
+        )
     robot_controllers = PathJoinSubstitution(
-        [FindPackageShare(runtime_config_package), "config", controllers_file]
+        [FindPackageShare(runtime_config_package), "config", controllers_file_name]
     )
     joystick_config_file = PathJoinSubstitution(
         [FindPackageShare(runtime_config_package), 'config', 'joystick.yaml']
     )
 
-    controller_switcher_config = PathJoinSubstitution(
-        [FindPackageShare(runtime_config_package), "config", "controller_switcher.yaml"]
-    )
+    controller_switcher_config = PathJoinSubstitution([
+        FindPackageShare(runtime_config_package),
+        "config",
+        "controller_switcher_3dof.yaml" if using_3dof else "controller_switcher_2dof.yaml",
+    ])
 
     robot_description_content = Command(
         [
@@ -226,27 +236,12 @@ def launch_setup(context, *args, **kwargs):
     motor_status_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=[
-            PythonExpression([
-                '"three_dof_motor_status_controller" if "',
-                use_3dof,
-                '" == "true" else "two_dof_motor_status_controller"'
-            ]),
-            "-c",
-            "/controller_manager",
-        ],
+        arguments=["motor_status_controller", "-c", "/controller_manager"],
     )
 
-    
-    wrist_controller = PythonExpression([
-        '"manual_3dof_wrist_joint_by_joint_controller" if "',
-        use_3dof,
-        '" == "true" else "manual_2dof_wrist_joint_by_joint_controller"'
-    ])
-    
     robot_controller_names = [
         "manual_arm_joint_by_joint_controller",
-        wrist_controller,
+        "manual_wrist_joint_by_joint_controller",
         "manual_end_effector_gripper_claw_controller",
     ]
     robot_controller_spawners = []
@@ -259,23 +254,12 @@ def launch_setup(context, *args, **kwargs):
             )
         ]
 
-    joint_trajectory_controller = PythonExpression([
-        '"threedof_joint_trajectory_controller" if "',
-        use_3dof,
-        '" == "true" else "twodof_joint_trajectory_controller"'
-    ])
-
-
-    inactive_controller = PythonExpression([
-        '"manual_2dof_wrist_joint_by_joint_controller" if "',
-        use_3dof,
-        '" == "true" else "manual_3dof_wrist_joint_by_joint_controller"',
-    ])
     inactive_robot_controller_names = [
-        inactive_controller,
-        "manual_arm_cylindrical_controller", 
-        joint_trajectory_controller,
-        "arm_velocity_controller"]
+        "joint_trajectory_controller",
+        "arm_velocity_controller",
+    ]
+    if not using_3dof:
+        inactive_robot_controller_names.insert(0, "manual_arm_cylindrical_controller")
     inactive_robot_controller_spawners = []
     for controller in inactive_robot_controller_names:
         inactive_robot_controller_spawners += [
@@ -377,9 +361,11 @@ def launch_setup(context, *args, **kwargs):
         robot_kinematics_path = PathJoinSubstitution(
             [FindPackageShare("arm_moveit"), "config", "kinematics.yaml"]
         )
-        moveit_controllers_config_path = PathJoinSubstitution(
-            [FindPackageShare("arm_moveit"), "config", "moveit_controllers_2dof.yaml"]
-        )
+        moveit_controllers_config_path = PathJoinSubstitution([
+            FindPackageShare("arm_moveit"),
+            "config",
+            "moveit_controllers_3dof.yaml" if using_3dof else "moveit_controllers_2dof.yaml",
+        ])
         moveit_config = (
             MoveItConfigsBuilder("athena_arm", package_name="arm_moveit")
             .robot_description(file_path=robot_description_path.perform(context))
