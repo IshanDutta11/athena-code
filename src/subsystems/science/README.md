@@ -22,14 +22,17 @@ By default (`mode:=standalone`), all nodes run on a single machine. For competit
 `athena_science.launch.py` currently launches the science subsystem.
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py mode:=jetson can_interface:=can1
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py mode:=base_station
 ```
 
@@ -44,12 +47,14 @@ Allows user to implement mock hardware components which will allow for virtual t
 _Hardware:_
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py use_mock_hardware:=false
 ```
 
 _Mock (no hardware):_
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py use_mock_hardware:=true
 ```
 
@@ -60,6 +65,7 @@ The Talon motor controllers overflow the CANBus, it can be helpful to debug with
 _Deactivates Talons:_
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py deactivate_talon:=true
 ```
 
@@ -70,6 +76,7 @@ Specify desired ROS2 controller. Currently, it is only the manual science contro
 _Science Controller:_
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py robot_controller:=science_controller
 ```
 
@@ -80,6 +87,7 @@ The Jetson currently uses a CANable to implement CAN, not its own CAN controller
 _CAN Interface:_
 
 ```bash
+source install/setup.bash
 ros2 launch science_bringup athena_science.launch.py can_interface:=can0
 ```
 

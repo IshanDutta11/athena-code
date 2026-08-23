@@ -21,14 +21,17 @@ By default (`mode:=standalone`), all nodes run on a single machine. For competit
 - `base_station`: starts only the joystick node, to be run on the base station
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py mode:=jetson can_interface:=can1
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py mode:=base_station
 ```
 
@@ -43,12 +46,14 @@ Allows user to implement mock hardware components which will allow for virtual t
 _Hardware:_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py use_mock_hardware:=false
 ```
 
 _Mock (no hardware):_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py use_mock_hardware:=true
 ```
 
@@ -59,6 +64,7 @@ Currently this repository does not support a fully implemented simulated hardwar
 _Deactivates RViz:_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py use_sim:=false
 ```
 
@@ -69,6 +75,7 @@ The Talon motor controllers overflow the CANBus, it can be helpful to debug with
 _Deactivates Talons:_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py deactivate_talon:=false
 ```
 
@@ -79,6 +86,7 @@ There are currently 2 variations of the wrist, 2DOF and 3DOF. Each require a dif
 _3DOF Mode:_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py use_3dof:=true
 ```
 
@@ -89,6 +97,7 @@ The Jetson currently uses a CANable to implement CAN, not its own CAN controller
 _CAN Interface:_
 
 ```bash
+source install/setup.bash
 ros2 launch arm_bringup athena_arm.launch.py can_interface:=can1
 ```
 
@@ -133,7 +142,6 @@ ros2 service call /set_controller msgs/srv/SetController "{
 **Concept Demo:**
 
 ![Alt text](../../../docs/cylindrical_controller.gif)
-
 
 **Controls:**
 ![Alt text](../../../docs/arm_controls_cylindrical.png)

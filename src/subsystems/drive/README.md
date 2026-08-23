@@ -20,14 +20,17 @@ By default (`mode:=standalone`), all nodes run on a single machine. For competit
 - `base_station`: starts only the teleop nodes (joystick + teleop_twist_joy), to be run on the base station
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py mode:=jetson
 ```
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py mode:=base_station
 ```
 
@@ -42,12 +45,14 @@ Allows user to implement mock hardware components which will allow for virtual t
 _Hardware:_
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py use_mock_hardware:=false
 ```
 
 _Mock (no hardware):_
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py use_mock_hardware:=true
 ```
 
@@ -58,6 +63,7 @@ Currently this repository does not support a fully implemented simulated hardwar
 _Deactivates RViz:_
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py use_sim:=false
 ```
 
@@ -68,6 +74,7 @@ ODrives can cloud the CANBus just like the Talons. They are easier to moderate b
 _Deactivates ODrives:_
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py deactivate_odrive:=true
 ```
 
@@ -82,6 +89,7 @@ The Jetson currently uses a CANable to implement CAN, not its own CAN controller
 _CAN Interface:_
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py can_interface:=can1
 ```
 
@@ -100,24 +108,28 @@ ros2 launch drive_bringup athena_drive.launch.py can_interface:=can1
 ##### Rear Ackermann Controller:
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py robot_controller:=rear_ackermann_controller
 ```
 
 ##### Front Ackermann Controller:
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py robot_controller:=front_ackermann_controller
 ```
 
 ##### Double Ackermann Controller:
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py robot_controller:=double_ackermann_controller
 ```
 
 ##### Ackermann Steering Controller:
 
 ```bash
+source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py robot_controller:=ackermann_steering_controller
 ```
 

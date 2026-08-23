@@ -39,7 +39,7 @@ docker images
 docker ps
 ```
 
-*Quick hardware test (joystick controlgit ler):*
+*Quick hardware test (joystick controller):*
 
 ```bash
 sudo evtest
@@ -66,6 +66,8 @@ _Virtual:_
 
 Use `ip link` to verify that `can0` or `vcan0` is up.
 
+---
+
 ### Building
 
 1. Install required dependencies:
@@ -80,34 +82,13 @@ rosdep install --from-paths src -y --ignore-src
 colcon build --symlink-install
 ```
 
-3. Source the workspace:
+3. Source the workspace in every terminal you use files specific to this workspace:
 
 ```bash
 source install/setup.bash
 ```
 
-### Building and Running with Docker
-
-In VS Code, open the command palette with `Ctrl+Shift+P`, select **Dev Containers: Reopen in Container**, and choose the Developer, Jetson, or Base Station configuration.
-
-Outside VS Code, use the scripts inside the desired machine configuration. For example, to build and run the developer container:
-
-```bash
-./.devcontainer/developer/build_docker.sh
-./.devcontainer/developer/run_docker.sh
-```
-
-The Jetson and base-station configurations use the same filenames in their respective directories:
-
-```bash
-./.devcontainer/jetson/build_docker.sh
-./.devcontainer/jetson/run_docker.sh
-
-./.devcontainer/base_station/build_docker.sh
-./.devcontainer/base_station/run_docker.sh
-```
-
-For hardware access, connect and pass through all required USB devices to the host or VM before creating the Docker container. This is suitable for now for devices such as controllers and CANable adapters, because Docker captures available device nodes when the container is created.
+4. Launch your desired subsystem.
 
 ---
 

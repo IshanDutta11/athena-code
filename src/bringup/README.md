@@ -18,18 +18,23 @@ Drive + Arm + GPS + Heading
 
 ```bash
 # Rover
+source install/setup.bash
 ros2 launch bringup delivery.launch.py mode:=jetson
 
 # Operator laptop
+source install/setup.bash
 ros2 launch bringup delivery.launch.py mode:=base_station
 
 # Single machine
+source install/setup.bash
 ros2 launch bringup delivery.launch.py
 
 # Mock hardware (no physical rover)
+source install/setup.bash
 ros2 launch bringup delivery.launch.py use_mock_hardware:=true use_sim:=true
 
 # 3 DOF wrist
+source install/setup.bash
 ros2 launch bringup delivery.launch.py use_3dof:=true
 ```
 
@@ -53,24 +58,31 @@ Drive + Nav2 + ZED + GPS + Localizer + Heading
 
 ```bash
 # Rover
+source install/setup.bash
 ros2 launch bringup autonav.launch.py mode:=jetson
 
 # Operator laptop
+source install/setup.bash
 ros2 launch bringup autonav.launch.py mode:=base_station
 
 # Single machine
+source install/setup.bash
 ros2 launch bringup autonav.launch.py
 
 # Use EKF localizer instead of ZED spatial localization
+source install/setup.bash
 ros2 launch bringup autonav.launch.py use_zed_localizer:=false
 
 # Disable GNSS fusion in ZED
+source install/setup.bash
 ros2 launch bringup autonav.launch.py enable_gnss:=false
 
 # Custom Nav2 params
+source install/setup.bash
 ros2 launch bringup autonav.launch.py params_file:=/path/to/params.yaml
 
 # Debug nav2 verbosity
+source install/setup.bash
 ros2 launch bringup autonav.launch.py log_level:=debug
 ```
 
@@ -100,18 +112,23 @@ Drive + Arm + GPS + Heading
 
 ```bash
 # Rover
+source install/setup.bash
 ros2 launch bringup equipment_servicing.launch.py mode:=jetson
 
 # Operator laptop
+source install/setup.bash
 ros2 launch bringup equipment_servicing.launch.py mode:=base_station
 
 # Single machine
+source install/setup.bash
 ros2 launch bringup equipment_servicing.launch.py
 
 # Mock hardware (no physical rover)
+source install/setup.bash
 ros2 launch bringup equipment_servicing.launch.py use_mock_hardware:=true use_sim:=true
 
 # 3 DOF wrist
+source install/setup.bash
 ros2 launch bringup equipment_servicing.launch.py use_3dof:=true
 ```
 
@@ -135,18 +152,23 @@ Drive + Science + GPS + Heading + LED Indicator
 
 ```bash
 # Rover
+source install/setup.bash
 ros2 launch bringup science.launch.py mode:=jetson
 
 # Operator laptop
+source install/setup.bash
 ros2 launch bringup science.launch.py mode:=base_station
 
 # Single machine
+source install/setup.bash
 ros2 launch bringup science.launch.py
 
 # Mock hardware (no physical rover)
+source install/setup.bash
 ros2 launch bringup science.launch.py use_mock_hardware:=true use_sim:=true
 
 # Custom CAN interface
+source install/setup.bash
 ros2 launch bringup science.launch.py can_interface:=vcan0
 ```
 
