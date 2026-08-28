@@ -20,6 +20,7 @@ class ControllerSwitcher(Node):
             namespace='',
             parameters=[
                 ('subsystem', Parameter.Type.STRING),
+                ('always_active', Parameter.Type.STRING_ARRAY),
                 ('full_arm', Parameter.Type.STRING_ARRAY),
                 ('arm', Parameter.Type.STRING_ARRAY),
                 ('wrist', Parameter.Type.STRING_ARRAY),
@@ -40,12 +41,12 @@ class ControllerSwitcher(Node):
         self.client_cb_group = MutuallyExclusiveCallbackGroup()
         
         # Controllers to always keep active or ignore
-        self.always_active = ["joint_state_broadcaster", "motor_status_controller"]
-        if self.subsystem == 'arm':
-            self.always_active.extend([
-                "cam_position_controller",
-                "rotary_encoder_state_request_controller",
-            ])
+        configured_always_active = self.get_parameter('always_active').value or []
+        self.always_active = list(dict.fromkeys([
+            "joint_state_broadcaster",
+            "motor_status_controller",
+            *configured_always_active,
+        ]))
         self.ignore_controllers = []
         
         # Lock to prevent concurrent service processing

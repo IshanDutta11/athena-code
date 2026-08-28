@@ -78,6 +78,21 @@ source install/setup.bash
 ros2 launch drive_bringup athena_drive.launch.py deactivate_odrive:=true
 ```
 
+#### Steering Config
+
+The `steering_config` launch argument controls which ODrive steering joints are exposed to `ros2_control`.
+
+- `rear` (default): exposes `steer_bl_joint` and `steer_br_joint`
+- `front`: exposes `steer_fl_joint` and `steer_fr_joint`
+- `all`: exposes all four steering joints
+
+Use `steering_config:=all` for controllers that need both front and rear steering joints, such as `crab_steering_controller`, `double_ackermann_controller`, and `swerve_drive_controller`. If those controllers fail to switch on, check that all four `steer_*_joint/position` command interfaces are available.
+
+```bash
+source install/setup.bash
+ros2 launch drive_bringup athena_drive.launch.py steering_config:=all
+```
+
 #### General Controls
 
 ![Alt text](../../../docs/drive_controls_rear_ackermann.png)
@@ -123,7 +138,14 @@ ros2 launch drive_bringup athena_drive.launch.py robot_controller:=front_ackerma
 
 ```bash
 source install/setup.bash
-ros2 launch drive_bringup athena_drive.launch.py robot_controller:=double_ackermann_controller
+ros2 launch drive_bringup athena_drive.launch.py robot_controller:=double_ackermann_controller steering_config:=all
+```
+
+##### Crab Steering Controller:
+
+```bash
+source install/setup.bash
+ros2 launch drive_bringup athena_drive.launch.py robot_controller:=crab_steering_controller steering_config:=all
 ```
 
 ##### Ackermann Steering Controller:

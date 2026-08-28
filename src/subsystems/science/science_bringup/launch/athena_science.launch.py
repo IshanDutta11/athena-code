@@ -183,7 +183,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     controller_switcher_config = PathJoinSubstitution(
-        [FindPackageShare("bringup"), "config", "controller_switcher.yaml"]
+        [FindPackageShare("science_bringup"), "config", "controller_switcher.yaml"]
     )
 
     joystick_config_file = PathJoinSubstitution(
